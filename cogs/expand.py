@@ -21,15 +21,15 @@ class expand(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
-        await dispand(message)
+        await _expand(message)
     
     @commands.Cog.listener()
     async def on_interaction(self, interaction: discord.Interaction):
         if interaction.data['custom_id'] == 'delete-expand':
-            await delete_dispand(interaction)
+            await deexpand(interaction)
         
 
-async def dispand(message: discord.Message):
+async def _expand(message: discord.Message):
     messages = await get_message(message)
     for m in messages:
         embeds = []
@@ -54,7 +54,7 @@ async def dispand(message: discord.Message):
 
         await message.reply(embeds=embeds, mention_author=False, view=view)
         
-async def delete_dispand(interaction: discord.Interaction):
+async def deexpand(interaction: discord.Interaction):
     await interaction.message.delete()
     await interaction.response.send_message("削除しました。", ephemeral=True)
         
