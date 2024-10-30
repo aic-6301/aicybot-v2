@@ -1,21 +1,9 @@
-MIT License
-
 Copyright (c) 2024 あいしぃー
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+本ソフトウェアおよび関連文書ファイル（以下「ソフトウェア」）のコピーを取得するすべての人に対し、次の条件の下で無償で使用を許可します。
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. 本コードを使用して新たに作成されたソフトウェア（以下「派生物」）は、同様の条件で公開しなければなりません。
+2. 派生物はオリジナルの著作権情報および本ライセンスを含むものとし、一般にアクセス可能な形で公開されることが義務付けられます。
+3. ソフトウェアは「現状のまま」提供され、いかなる保証も伴いません。
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+使用により生じたいかなる損害についても、著作権者は責任を負いません。
