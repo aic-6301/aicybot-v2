@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from discord.app_commands import locale_str
+
 
 
 class cog(commands.Cog):
