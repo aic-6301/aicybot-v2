@@ -40,7 +40,7 @@ async def _expand(message: discord.Message):
         
         if m.content or m.attachments:
             if m.attachments:
-                for at in m.attachments[1:]:
+                for at in m.attachments[:1]:
                     embeds[0].set_image(url=at.url)
             if m.content:
                 embeds[0].description = m.content
