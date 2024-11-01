@@ -1,3 +1,4 @@
 coloredlogs
 discord.py
 python-dotenv
+discord.py-pagination

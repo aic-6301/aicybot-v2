@@ -55,10 +55,7 @@ async def _expand(message: discord.Message):
 async def deexpand(interaction: discord.Interaction):
     await interaction.message.delete()
     await interaction.response.send_message("削除しました。", ephemeral=True)
-        
-            
-        
-    
+
     
 async def get_message(message):
     messages = []
