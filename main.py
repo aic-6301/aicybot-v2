@@ -2,9 +2,12 @@ import discord
 from discord.ext import commands
 
 from logging import getLogger, basicConfig, DEBUG
+import coloredlogs
 import os
 from dotenv import load_dotenv
 import traceback
+
+from utils import database
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -12,12 +15,13 @@ token = os.getenv('DISCORD_TOKEN')
 class aicybot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix="a.",
+            command_prefix=commands.when_mentioned_or('a.'),
             help_command=None,
             intents=discord.Intents.all()
         )
         basicConfig(level=DEBUG)  # ログの基本設定を追加
-        self.logger = getLogger(__name__)
+        self.logger = getLogger('AicyBot')
+        coloredlogs.install(level=DEBUG, logger=self.logger)
         self.logger.setLevel(DEBUG)
 
     async def on_ready(self):
@@ -38,6 +42,9 @@ class aicybot(commands.Bot):
         except Exception as e:
             self.logger.info("jishaku failed to load", e)
             traceback.print_exc()
+        self.logger.debug('Setup Database')
+        database.setup()
+        self.logger.debug('Loaded Database')
         self.logger.debug('Syncing slash commands')
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")

@@ -3,16 +3,12 @@ from discord.ext import commands
 from discord import app_commands
 import re
 
+from utils import database
+
 regex_discord_message_url = (
     '(?!<)https://(ptb.|canary.)?discord(app)?.com/channels/'
     '(?P<guild>[0-9]{17,20})/(?P<channel>[0-9]{17,20})/(?P<message>[0-9]{17,20})(?!>)'
 )
-regex_extra_url = (
-    r'\?base_aid=(?P<base_author_id>[0-9]{17,20})'
-    '&aid=(?P<author_id>[0-9]{17,20})'
-    '&extra=(?P<extra_messages>(|[0-9,]+))'
-)
-
 class expand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -21,11 +17,12 @@ class expand(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
-        await _expand(message)
+        if database.get('expand', message.guild.id)[1]:
+            await _expand(message)
     
     @commands.Cog.listener()
     async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.data['custom_id'] == 'delete-expand':
+        if interaction.data.get('custom_id') and interaction.data['custom_id'] == 'delete-expand':
             await deexpand(interaction)
         
 
@@ -53,7 +50,8 @@ async def _expand(message: discord.Message):
         view.add_item(discord.ui.Button(style=discord.ButtonStyle.danger, label='削除', custom_id='delete-expand', emoji='🗑️'))
 
         await message.reply(embeds=embeds, mention_author=False, view=view)
-        
+
+
 async def deexpand(interaction: discord.Interaction):
     await interaction.message.delete()
     await interaction.response.send_message("削除しました。", ephemeral=True)
