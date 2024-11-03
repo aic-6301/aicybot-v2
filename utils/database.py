@@ -3,7 +3,7 @@ import sqlite3
 setup_query = [
     "CREATE TABLE IF NOT EXISTS \"expand\" (guild INTEGER PRIMARY KEY, bool BOOLEAN)",
     "CREATE TABLE IF NOT EXISTS \"join\" (guild INTEGER PRIMARY KEY, bool BOOLEAN, channel INTEGER DEFAULT NULL)",
-    "CREATE TABLE IF NOT EXISTS \"join_bot\" (guild INTEGER PRIMARY KEY, bool BOOLEAN, role INTEGER, channel INTEGER DEFAULT NULL)"
+    "CREATE TABLE IF NOT EXISTS \"join_bot\" (guild INTEGER PRIMARY KEY, bool BOOLEAN, role INTEGER, channel INTEGER DEFAULT NULL)",
 ]
 
 def connect():
@@ -15,6 +15,7 @@ def setup():
         for query in setup_query:
             c.execute(query)
         conn.commit()
+        return
         
 def get(table, guild: int):
     """
@@ -49,6 +50,27 @@ def set(table, key, value, guild: int):
         c = conn.cursor()
         c.execute(f'INSERT INTO \"{table}\" VALUES (?, ?)', (guild, value))
         conn.commit()
+        return
+
+def set_keys(table, *key, value, guild: int):
+    """
+    指定されたテーブルにキーと値のペアを挿入します。
+    Args:
+        table (str): データを挿入するテーブルの名前。
+        key (str): 挿入するキー。
+        value (str): 挿入する値。
+        guild (int): レコードをフィルタリングするギルド識別子。
+    Raises:
+        sqlite3.DatabaseError: データベース操作中にエラーが発生した場合。
+    """
+    with connect() as conn:
+        if get(table, guild):
+            update(table, key, value, guild)
+            return
+        c = conn.cursor()
+        c.execute(f'INSERT INTO \"{table}\" ({key[0]}, {key[1]}) VALUES (?, ?)', (guild, value))
+        conn.commit()
+        return
         
 def set_channel(table, value, channel: int, guild: int):
     """
@@ -69,6 +91,7 @@ def set_channel(table, value, channel: int, guild: int):
         c = conn.cursor()
         c.execute(f'INSERT INTO \"{table}\" VALUES (?, ?, ?)', (guild, value, channel))
         conn.commit()
+        return
 
 def set_channel_role(table, value, role: int, channel: int, guild: int):
     """
@@ -95,6 +118,7 @@ def set_channel_role(table, value, role: int, channel: int, guild: int):
         c = conn.cursor()
         c.execute(f'INSERT INTO \"{table}\" VALUES (?, ?, ?, ?)', (guild, value, role, channel))
         conn.commit()
+        return
 
 def update(table, key, new_value, guild: int):
     """
@@ -108,9 +132,11 @@ def update(table, key, new_value, guild: int):
         sqlite3.Error: データベース操作中にエラーが発生した場合。
     """
     with connect() as conn:
-        c = conn.cursor()
-        c.execute(f'UPDATE \"{table}\" SET {key} = ? WHERE guild = ?', (new_value, guild))
-        conn.commit()
+        for k in key:
+            c = conn.cursor()
+            c.execute(f'UPDATE \"{table}\" SET {k} = ? WHERE guild = ?', (new_value, guild))
+            conn.commit()
+        return
         
 
 def delete(table, guild: int):
@@ -127,3 +153,17 @@ def delete(table, guild: int):
         c = conn.cursor()
         c.execute(f'DELETE FROM \"{table}\" WHERE guild = ?', (guild,))
         conn.commit()
+        return
+
+def run_sql(sql):
+    """
+    指定されたSQLクエリを実行します。
+    Args:
+        sql (str): 実行するSQLクエリ。
+    Returns:
+        なし
+    """
+    with connect() as conn:
+        c = conn.cursor()
+        c.execute(sql)
+        return

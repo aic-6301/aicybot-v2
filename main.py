@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 import traceback
 
-from utils import database
+from utils import database, database_rp
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -44,6 +44,7 @@ class aicybot(commands.Bot):
             traceback.print_exc()
         self.logger.debug('Setup Database')
         database.setup()
+        database_rp.setup()
         self.logger.debug('Loaded Database')
         self.logger.debug('Syncing slash commands')
         synced = await self.tree.sync()
