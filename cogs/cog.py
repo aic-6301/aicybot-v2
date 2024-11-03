@@ -20,8 +20,8 @@ class cog(commands.Cog):
         embed.add_field(name="Botの作成日時", value=self.bot.user.created_at.strftime("%Y/%m/%d %H:%M:%S"))
         embed.add_field(name="バージョン", value="0.3")
         embed.add_field(name="開発者", value="AIC_6301")
+        embed.set_footer(text="Botを招待するには/inviteから。")
         embed.set_thumbnail(url=self.bot.user.avatar.url)
-        embed.set_footer(text="招待は/inviteから。")
         view = discord.ui.View()
         view.add_item(discord.ui.Button(label='レポジトリ', url='https://github.com/aic-6301/aicybot-v2', style=discord.ButtonStyle.link, emoji='🔗'))
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
@@ -36,11 +36,11 @@ class cog(commands.Cog):
         embed = discord.Embed(title="Botの招待リンク", description="このBotを招待するためのリンクです", color=discord.Color.dark_gold())
         view = discord.ui.View()
         view.add_item(discord.ui.Button(label="管理者権限で招待",emoji="👑",style=discord.ButtonStyle.url,
-                                         url=f"https://discord.com/api/oauth2/authorize?client_id={bot.id}&permissions=8&scope=bot%20applications.commands", emoji='🔗'))
+                                         url=f"https://discord.com/api/oauth2/authorize?client_id={bot.id}&permissions=8&scope=bot%20applications.commands"))
         view.add_item(discord.ui.Button(label="権限を選択して招待",emoji="🔢",style=discord.ButtonStyle.url,
-                                         url=f"https://discord.com/api/oauth2/authorize?client_id={bot.id}&permissions=1194000908287&scope=bot%20applications.commands", emoji='🔗'))
+                                         url=f"https://discord.com/api/oauth2/authorize?client_id={bot.id}&permissions=1194000908287&scope=bot%20applications.commands"))
         view.add_item(discord.ui.Button(label="権限無しで招待",emoji="❌",style=discord.ButtonStyle.url,
-                                         url=f"https://discord.com/api/oauth2/authorize?client_id={bot.id}&scope=bot%20applications.commands", emoji='🔗'))
+                                         url=f"https://discord.com/api/oauth2/authorize?client_id={bot.id}&scope=bot%20applications.commands"))
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
     
     @app_commands.command(name='ping', description="BotのPingを取得します")
