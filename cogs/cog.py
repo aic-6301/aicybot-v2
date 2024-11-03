@@ -33,7 +33,7 @@ class cog(commands.Cog):
                                     value += f"\n選択肢: {', '.join([f'{c.name}' for c in param.choices])}"
                             embed.add_field(name=f"/{cmd.name} {child.name}", value=value)
                             
-                            if (i+1) % 5 == 0:
+                            if (i+1) % 6 == 0:
                                 embeds.append(embed)
                                 embed = discord.Embed(title="ヘルプ", color=discord.Color.dark_gold())
                         

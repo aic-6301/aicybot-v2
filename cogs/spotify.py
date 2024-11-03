@@ -9,8 +9,12 @@ class spotify(commands.Cog):
 
     @app_commands.command(name='spotify', description='あなたが現在再生しているSpotifyの情報を表示します。')
     @app_commands.guild_only()
-    async def spotify(self, interaction: discord.Interaction):
-        member = interaction.guild.get_member(interaction.user.id)
+    @app_commands.describe(member='Spotify情報を取得するメンバー')
+    async def spotify(self, interaction: discord.Interaction, member: discord.Member = None):
+        if not member:
+            member = interaction.guild.get_member(interaction.user.id)
+        else:
+            member = interaction.guild.get_member(member.id)
         if member.activities:
             for activity in member.activities:
                 if isinstance(activity, discord.Spotify):

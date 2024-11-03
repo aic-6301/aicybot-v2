@@ -1,7 +1,9 @@
 import sqlite3
 
 setup_query = [
-    "CREATE TABLE IF NOT EXISTS expand (guild INTEGER PRIMARY KEY, bool BOOLEAN)"
+    "CREATE TABLE IF NOT EXISTS \"expand\" (guild INTEGER PRIMARY KEY, bool BOOLEAN)",
+    "CREATE TABLE IF NOT EXISTS \"join\" (guild INTEGER PRIMARY KEY, bool BOOLEAN, channel INTEGER DEFAULT NULL)",
+    "CREATE TABLE IF NOT EXISTS \"join_bot\" (guild INTEGER PRIMARY KEY, bool BOOLEAN, role INTEGER, channel INTEGER DEFAULT NULL)"
 ]
 
 def connect():
@@ -25,7 +27,7 @@ def get(table, guild: int):
     """
     with connect() as conn:
         c = conn.cursor()
-        c.execute(f'SELECT * FROM {table} WHERE guild = ?', (guild,))
+        c.execute(f'SELECT * FROM \"{table}\" WHERE guild = ?', (guild,))
         return c.fetchone()
 
 
@@ -45,7 +47,53 @@ def set(table, key, value, guild: int):
             update(table, key, value, guild)
             return
         c = conn.cursor()
-        c.execute(f'INSERT INTO {table} VALUES (?, ?)', (guild, value))
+        c.execute(f'INSERT INTO \"{table}\" VALUES (?, ?)', (guild, value))
+        conn.commit()
+        
+def set_channel(table, value, channel: int, guild: int):
+    """
+    指定されたテーブルにキーと値のペアを挿入します。
+    Args:
+        table (str): データを挿入するテーブルの名前。
+        key (str): 挿入するキー。
+        value (str): 挿入する値。
+        guild (int): レコードをフィルタリングするギルド識別子。
+    Raises:
+        sqlite3.DatabaseError: データベース操作中にエラーが発生した場合。
+    """
+    with connect() as conn:
+        if get(table, guild):
+            update(table, 'bool', value, guild)
+            update(table, 'channel', channel, guild)
+            return
+        c = conn.cursor()
+        c.execute(f'INSERT INTO \"{table}\" VALUES (?, ?, ?)', (guild, value, channel))
+        conn.commit()
+
+def set_channel_role(table, value, role: int, channel: int, guild: int):
+    """
+    指定されたテーブルにチャンネルとロールの情報を設定します。
+    この関数は、指定されたギルドに対してチャンネルとロールの情報を設定します。
+    既にギルドの情報が存在する場合は、ロールとチャンネルの情報を更新します。
+    存在しない場合は、新しいレコードを挿入します。
+    Args:
+        table (str): 操作対象のテーブル名。
+        value (Any): 挿入または更新する値。
+        role (int): 設定するロールのID。
+        channel (int): 設定するチャンネルのID。
+        guild (int): 設定するギルドのID。
+    Returns:
+        None
+    """
+    
+    with connect() as conn:
+        if get(table, guild):
+            update(table, 'bool', value, guild)
+            update(table, 'role', role, guild)
+            update(table, 'channel', channel, guild)
+            return
+        c = conn.cursor()
+        c.execute(f'INSERT INTO \"{table}\" VALUES (?, ?, ?, ?)', (guild, value, role, channel))
         conn.commit()
 
 def update(table, key, new_value, guild: int):
@@ -61,7 +109,7 @@ def update(table, key, new_value, guild: int):
     """
     with connect() as conn:
         c = conn.cursor()
-        c.execute(f'UPDATE {table} SET {key} = ? WHERE guild = ?', (new_value, guild))
+        c.execute(f'UPDATE \"{table}\" SET {key} = ? WHERE guild = ?', (new_value, guild))
         conn.commit()
         
 
@@ -77,5 +125,5 @@ def delete(table, guild: int):
     """
     with connect() as conn:
         c = conn.cursor()
-        c.execute(f'DELETE FROM {table} WHERE guild = ?', (guild,))
+        c.execute(f'DELETE FROM \"{table}\" WHERE guild = ?', (guild,))
         conn.commit()
