@@ -12,6 +12,19 @@ class cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
+    @app_commands.command(name='about', description="Botの情報を表示します")
+    async def about(self, interaction: discord.Interaction):
+        embed = discord.Embed(title="Bot情報", description="-# このBotの詳しい情報は特にないようです。", color=discord.Color.dark_gold())
+        embed.add_field(name="名前", value=self.bot.user.name)
+        embed.add_field(name="ID", value=self.bot.user.id)
+        embed.add_field(name="Botの作成日時", value=self.bot.user.created_at.strftime("%Y/%m/%d %H:%M:%S"))
+        embed.add_field(name="バージョン", value="0.3")
+        embed.add_field(name="開発者", value="AIC_6301")
+        embed.set_thumbnail(url=self.bot.user.avatar.url)
+        view = discord.ui.View()
+        view.add_item(discord.ui.Button(label='レポジトリ', url='https://github.com/aic-6301/aicybot-v2', style=discord.ButtonStyle.link, emoji='🔗'))
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    
     @app_commands.command(name='ping', description="BotのPingを取得します")
     async def ping(self, interaction: discord.Interaction):
         await interaction.response.send_message("Pong!:ping_pong: {0}ms".format(round(self.bot.latency * 1000)), ephemeral=True)
