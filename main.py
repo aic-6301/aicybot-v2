@@ -25,6 +25,9 @@ class aicybot(commands.Bot):
         self.logger.setLevel(DEBUG)
 
     async def on_ready(self):
+        self.logger.debug('Setup Database')
+        database.setup()
+        self.logger.debug('Loaded Database')
         self.logger.debug('Loading Cogs')
         for file in os.listdir("./cogs"):
             if file.endswith('.py'):
@@ -42,10 +45,6 @@ class aicybot(commands.Bot):
         except Exception as e:
             self.logger.info("jishaku failed to load", e)
             traceback.print_exc()
-        self.logger.debug('Setup Database')
-        database.setup()
-        database_rp.setup()
-        self.logger.debug('Loaded Database')
         self.logger.debug('Syncing slash commands')
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")
