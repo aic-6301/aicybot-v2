@@ -19,7 +19,7 @@ class settings(commands.Cog):
     ])
     @app_commands.default_permissions(manage_guild=True)
     async def expand(self, interaction: discord.Interaction, mode: int):
-        database.set('expand', 'bool', mode, interaction.guild.id)
+        database.insert_or_update('expand', ['bool'], [mode], key_value=interaction.guild.id)
         await interaction.response.send_message(f'メッセージの展開を{"有効" if mode else "無効"}にしました。', ephemeral=True)
     
     @settings.command(name='join', description='メンバーが参加した際の通知を設定します。')
@@ -39,7 +39,7 @@ class settings(commands.Cog):
         channel_id = channel.id if channel else 0
         
         try:
-            database.set_channel('join', mode, channel_id, interaction.guild.id)
+            database.insert_or_update('join', ['guild', 'bool', 'channel'], [interaction.guild.id, mode, channel_id], key_value=interaction.guild.id)
             await interaction.response.send_message(f'参加通知を{f"有効にし、{channel.mention}に通知チャンネルを設定" if mode else "無効に"}しました。', ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f'エラーが発生しました: {e}', ephemeral=True)
@@ -66,7 +66,7 @@ class settings(commands.Cog):
             channel_id = channel.id if channel else 0
             
         try:
-            database.set_channel_role('join_bot', mode, role_id, channel_id, interaction.guild.id)
+            database.insert_or_update('join_bot', ['guild', 'bool', 'role', 'channel'], [interaction.guild.id, mode, role_id, channel_id], key_value=interaction.guild.id)
             await interaction.response.send_message(f'Bot参加通知を{f"有効にし、{role.mention}にロールを設定し、{channel.mention}に通知チャンネルを設定" if mode else "無効に"}しました。', ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f'エラーが発生しました: {e}', ephemeral=True)
