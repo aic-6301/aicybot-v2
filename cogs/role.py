@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from utils import database, database_rp
+from utils import database_rp
 
 class RoleDropdown(discord.ui.Select):
     def __init__(self, roles):
@@ -69,45 +69,40 @@ class RolePanel(commands.Cog):
     @group.command(name="create", description="ロールパネルを作成します")
     @app_commands.describe(name='ロールパネルの名前')
     async def create_panel(self, interaction: discord.Interaction, name: str):
-        if database.get_key('role_panels', 'name', name):
-            await interaction.response.send_message('その名前のロールパネルは既に存在します。', ephemeral=True)
-            return
-        database.insert_or_update('role_panels', ['name', 'guild'], [name, interaction.guild.id])
+        database_rp.create_rolepanel(name, interaction.guild.id)
         await interaction.response.send_message(f'{name}ロールパネルが作成されました。', ephemeral=True)
     
     @group.command(name="addrole", description="ロールパネルにロールを追加します")
     @app_commands.describe(name='ロールパネルの名前', role='追加するロール')
     async def add_role(self, interaction: discord.Interaction, name: str, role: discord.Role):
-        panel = database.get_key('role_panels', 'name', name, 'id')
-        if panel:
-            if role.position >= interaction.guild.me.top_role.position:
-                embed = discord.Embed(title='エラー', description='Botより上のロールを追加することはできません。', color=discord.Color.red())
-                await interaction.response.send_message(embed=embed, ephemeral=True)
-                return
-            database.insert_or_update('panel_roles', ['panel_id', 'role_id'], [panel[0], role.id])
-            await interaction.response.send_message(f'{role.mention} ロールがパネルに追加されました。', ephemeral=True)
+        database_rp.add_role_to_panel(name, role.id)
+        if role.position >= interaction.guild.me.top_role.position:
+            embed = discord.Embed(title='エラー', description='Botより上のロールを追加することはできません。', color=discord.Color.red())
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+        await interaction.response.send_message(f'{role.mention} ロールがパネルに追加されました。', ephemeral=True)
 
     @group.command(name="removerole", description="ロールパネルからロールを削除します")
     @app_commands.describe(name='ロールパネルの名前', role='削除するロール')
     async def remove_role(self, interaction: discord.Interaction, name: str, role: discord.Role):
-        database.delete('panel_roles', 'role_id', role.id)
+        database_rp.remove_role_from_panel(name, role.id)
         embed = discord.Embed(title='削除', description=f'{role.mention} ロールがパネルから削除されました。', color=discord.Color.blurple())
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @group.command(name="delete", description="ロールパネルを削除します")
     @app_commands.describe(name='ロールパネルの名前')
     async def delete_panel(self, interaction: discord.Interaction, name: str):
-        database.delete('role_panels', 'name', name)
+        database_rp.delete_rolepanel(name)
         await interaction.response.send_message(f'{name}ロールパネルが削除されました。', ephemeral=True)
     
     @group.command(name='send', description='ロールパネルを送信します')
     @app_commands.describe(name='ロールパネルの名前', channel='送信するチャンネル')
     async def send_panel(self, interaction: discord.Interaction, name: str, channel: discord.TextChannel):
-        panel = database.get_key('role_panels', 'name', name)
+        panel = database_rp.get(name)
         if not panel:
             await interaction.response.send_message('ロールパネルが見つかりませんでした。\nパネルを作成してからもう一度お試しください。', ephemeral=True)
             return
-        roles = [interaction.guild.get_role(role_id) for role_id in database.get_key('panel_roles', 'panel_id', panel[0], 'role_id')]
+        roles = [interaction.guild.get_role(role_id) for role_id in database_rp.get_roles_from_panel(name)]
         if not roles:
             await interaction.response.send_message('ロールが見つかりませんでした。\nロールを設定してからもう一度お試しください。', ephemeral=True)
             return
@@ -127,7 +122,7 @@ class RolePanel(commands.Cog):
     @add_role.autocomplete("name")
     @remove_role.autocomplete("name")
     async def _name_autocomplete(self, interaction: discord.Interaction, name: str):
-        panels = database.get_key('role_panels', 'guild', interaction.guild.id)
+        panels = database_rp.get_guild_panels(interaction.guild.id)
         options = []
         for panel in panels:
             options.append(app_commands.Choice(name=panel[1], value=panel[1]))
@@ -136,14 +131,14 @@ class RolePanel(commands.Cog):
 
     async def cog_load(self):
         self.bot.logger.debug('Updating role panels')
-        panels = database.get_all('role_panels')
+        panels = database_rp.get_all()
         for panel in panels:
             guild = self.bot.get_guild(panel[2])
             if not guild:
                 self.bot.logger.error(f"Guild with ID {panel[2]} not found")
-                database.delete('role_panels', 'name', panel[1])
+                database_rp.delete_rolepanel(panel[1])
                 continue
-            roles = [guild.get_role(role_id) for role_id in database.get_key('panel_roles', 'panel_id', panel[0], 'role_id')]
+            roles = [guild.get_role(role_id) for role_id in database_rp.get_roles_from_panel(panel[1])]
             if roles:
                 channel = guild.get_channel(panel[4])
                 if channel:
