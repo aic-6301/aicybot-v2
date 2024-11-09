@@ -34,8 +34,8 @@ def get_key(table, key, value, key_column='*'):
     """
     with connect() as conn:
         c = conn.cursor()
-        c.execute(f'SELECT \"{key_column}\" FROM \"{table}\" WHERE \"{key}\" = ?', (value,))
-        return c.fetchone()
+        c.execute(f'SELECT {key_column} FROM \"{table}\" WHERE \"{key}\" = ?', (value,))
+        return c.fetchall()
 
 def get_all(table):
     """
@@ -56,7 +56,7 @@ def insert_or_update(table, columns, values, key_column='guild', key_value=None)
         else:
             c = conn.cursor()
             placeholders = ', '.join(['?'] * len(values))
-            c.execute(f'INSERT INTO \"{table}\" ({", ".join(columns)}) VALUES ({placeholders})', values)
+            c.execute(f'INSERT INTO \"{table}\" ({", ".join(columns)}) VALUES ({placeholders})', (*values,))
             conn.commit()
 
 def update(table, columns, values, key_column='guild', key_value=None):
