@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 import traceback
 
-from utils import database, database_rp
+from utils import database
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
