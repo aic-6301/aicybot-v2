@@ -44,7 +44,6 @@ class aicybot(commands.Bot):
             traceback.print_exc()
         self.logger.debug('Setup Database')
         database.setup()
-        database_rp.setup()
         self.logger.debug('Loaded Database')
         self.logger.debug('Syncing slash commands')
         synced = await self.tree.sync()

@@ -69,7 +69,10 @@ class RolePanel(commands.Cog):
     @group.command(name="create", description="ロールパネルを作成します")
     @app_commands.describe(name='ロールパネルの名前')
     async def create_panel(self, interaction: discord.Interaction, name: str):
-        database_rp.create_rolepanel(name, interaction.guild.id)
+        if database.get_key('role_panels', 'name', name):
+            await interaction.response.send_message('その名前のロールパネルは既に存在します。', ephemeral=True)
+            return
+        database.insert_or_update('role_panels', ['name', 'guild'], [name, interaction.guild.id])
         await interaction.response.send_message(f'{name}ロールパネルが作成されました。', ephemeral=True)
     
     @group.command(name="addrole", description="ロールパネルにロールを追加します")
@@ -88,14 +91,14 @@ class RolePanel(commands.Cog):
     @group.command(name="removerole", description="ロールパネルからロールを削除します")
     @app_commands.describe(name='ロールパネルの名前', role='削除するロール')
     async def remove_role(self, interaction: discord.Interaction, name: str, role: discord.Role):
-        database_rp.remove_role_from_panel(name, role.id)
+        database.delete('panel_roles', 'role_id', role.id)
         embed = discord.Embed(title='削除', description=f'{role.mention} ロールがパネルから削除されました。', color=discord.Color.blurple())
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @group.command(name="delete", description="ロールパネルを削除します")
     @app_commands.describe(name='ロールパネルの名前')
     async def delete_panel(self, interaction: discord.Interaction, name: str):
-        database_rp.delete_rolepanel(name)
+        database.delete('role_panels', 'name', name)
         await interaction.response.send_message(f'{name}ロールパネルが削除されました。', ephemeral=True)
     
     @group.command(name='send', description='ロールパネルを送信します')
@@ -142,12 +145,12 @@ class RolePanel(commands.Cog):
 
     async def cog_load(self):
         self.bot.logger.debug('Updating role panels')
-        panels = database_rp.get_all()
+        panels = database.get_all('role_panels')
         for panel in panels:
             guild = self.bot.get_guild(panel[2])
             if not guild:
                 self.bot.logger.error(f"Guild with ID {panel[2]} not found")
-                database_rp.delete_rolepanel(panel[1])
+                database.delete('role_panels', 'name', panel[1])
                 continue
             try:
                 role_ids = database.get_key('panel_roles', 'panel_id', panel[0], 'role_id')
