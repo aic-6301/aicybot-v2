@@ -114,6 +114,7 @@ class cog(commands.Cog):
             else:
                 await Paginator.Simple(ephemeral=True).start(interaction, embeds)
                 
+    
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(cog(bot))

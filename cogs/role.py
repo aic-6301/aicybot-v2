@@ -155,7 +155,7 @@ class RolePanel(commands.Cog):
             try:
                 role_ids = database.get_key('panel_roles', 'panel_id', panel[0], 'role_id')
                 if role_ids == []:
-                    self.bot.logger.error(f"Error fetching roles for panel {panel[1]}", e)
+                    self.bot.logger.error(f"Error fetching roles for panel {panel[1]}")
                     continue
                 roles = [guild.get_role(role_id[0]) for role_id in role_ids]
             except Exception as e:
