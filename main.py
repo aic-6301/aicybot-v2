@@ -4,6 +4,7 @@ from discord.ext import commands
 from logging import getLogger, basicConfig, DEBUG
 import coloredlogs
 import os
+import sys
 from dotenv import load_dotenv
 import traceback
 
@@ -25,6 +26,11 @@ class aicybot(commands.Bot):
         self.logger.setLevel(DEBUG)
 
     async def on_ready(self):
+        
+        if sys.version_info < (3, 12):
+            self.logger.critical('Python 3.12以上が必要です。')
+            sys.exit()
+            
         self.logger.debug('Setup Database')
         database.setup()
         self.logger.info('Loaded Database')
