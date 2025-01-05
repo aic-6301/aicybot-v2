@@ -17,7 +17,8 @@ class expand(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
-        if database.get('expand', message.guild.id)[1]:
+        expand_setting = database.get('expand', message.guild.id)
+        if expand_setting and expand_setting[1]:
             await _expand(message)
     
     @commands.Cog.listener()
