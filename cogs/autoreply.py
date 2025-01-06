@@ -64,7 +64,8 @@ class autoreply(commands.Cog):
         embeds = []
         embed = discord.Embed(title='自動返信リスト', color=discord.Color.blurple())
         for i, autoreply in enumerate(autoreplies):
-            embed.add_field(name=f'ID: `{autoreply[0]}`', value=f'キーワード:{autoreply[1]}\n返信内容:{autoreply[2]}\n登録者: <@{autoreply[3]}>')
+            field_value = f'キーワード:{autoreply[1]}\n返信内容:{autoreply[2][:300] + "..." if len(autoreply[2]) > 300 else autoreply[2]}\n登録者: <@{autoreply[3]}>'
+            embed.add_field(name=f'ID: `{autoreply[0]}`', value=field_value)
             if (i+1) % 10 == 0:
                 embeds.append(embed)
                 embed = discord.Embed(title='自動返信リスト', color=discord.Color.blurple())

@@ -12,7 +12,8 @@ class server(commands.Cog):
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
         if member.bot:
-            if database.get('join_bot', guild.id)[1]:
+            data = database.get('join_bot', guild.id)
+            if data is not None and data[1]:
                 data = database.get('join_bot', guild.id)
                 role = guild.get_role(data[3])
                 if not role:
