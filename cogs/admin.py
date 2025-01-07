@@ -46,7 +46,7 @@ class admin(commands.Cog):
             return
         
         embed = discord.Embed(title="⏲️アップデート", description="アップデートを開始します", color=discord.Color.dark_gold())
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.send_message(embed=embed, ephemeral=False)
         process = subprocess.run(['git', 'pull', 'origin', 'main'], capture_output=True, text=True)
         
         if process.returncode == 0:
