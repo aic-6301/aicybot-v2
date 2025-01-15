@@ -87,7 +87,7 @@ class settings(commands.Cog):
         
         try:
             database.set_channel('log', mode, channel_id, interaction.guild.id)
-            await interaction.response.send_message(f'ログを{f"有効にし、{channel.mention}にログチャンネルを設定" if mode else "無効に"}しました。', ephemeral=True)
+            await interaction.response.send_message(f'ログを{f"有効にし、{channel.mention}にログチャンネルを設定" if mode else "無効に"}しました。\n-# ※適用まで時間がかかる可能性があります。', ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f'エラーが発生しました: `{e}`', ephemeral=True)
     
