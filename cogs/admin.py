@@ -12,6 +12,9 @@ class reboot(discord.ui.View):
     
     @discord.ui.button(label="サービスを再起動する。", style=discord.ButtonStyle.red, emoji="🔴")
     async def reboot(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not await self.bot.is_owner(interaction.user):
+            await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
+            return
         interaction.message.embeds[0].description =+ "\n再起動します。"
         await interaction.message.edit(embed=interaction.message.embeds[0])
         sys.exit()

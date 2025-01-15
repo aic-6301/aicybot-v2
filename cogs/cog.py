@@ -60,8 +60,7 @@ class cog(commands.Cog):
                         for i, child in enumerate(cmd.commands):
                             value = child.description
                             for param in child.parameters:
-                                if param.choices:
-                                    value += f"\n選択肢: {', '.join([f'{c.name}' for c in param.choices])}"
+                                value += f"\n{param.name}: {param.description}"
                             embed.add_field(name=f"/{cmd.name} {child.name}", value=value)
                             
                             if (i+1) % 6 == 0:
@@ -95,6 +94,8 @@ class cog(commands.Cog):
             embeds = []
             embed.description = "コマンド一覧"
             for i, cmd in enumerate(self.bot.tree.walk_commands(type=discord.AppCommandType.chat_input)):
+                if cmd.parent.name == "admin" and not await self.bot.is_owner(interaction.user):
+                    continue
                 if cmd.parent:
                     name = f"/{cmd.parent.name} {cmd.name}"
                 else:
@@ -102,7 +103,7 @@ class cog(commands.Cog):
                 if isinstance(cmd, discord.app_commands.Group):
                     continue
                 embed.add_field(name=name, value=cmd.description, inline=False)
-                if (i+1) % 5 == 0:
+                if (i+1) % 6 == 0:
                     embeds.append(embed)
                     embed = discord.Embed(title="ヘルプ", color=discord.Color.dark_gold())
                     
