@@ -91,5 +91,7 @@ class settings(commands.Cog):
         except Exception as e:
             await interaction.response.send_message(f'エラーが発生しました: `{e}`', ephemeral=True)
     
+    
+    
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(settings(bot))

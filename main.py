@@ -14,10 +14,12 @@ load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 
 
-if sys.argv[1] == 'prod':
+if sys.argv[0] == 'prod':
     cmd_prefix = commands.when_mentioned_or('a.')
+    level = INFO
 else:
     cmd_prefix = commands.when_mentioned_or('a/')
+    level = DEBUG
 
 
 class aicybot(commands.Bot):
@@ -27,10 +29,10 @@ class aicybot(commands.Bot):
             help_command=None,
             intents=discord.Intents.all()
         )
-        basicConfig(level=DEBUG)  # ログの基本設定を追加
+        basicConfig(level=level)  # ログの基本設定を追加
         self.logger = getLogger('AicyBot')
-        coloredlogs.install(level=DEBUG, logger=self.logger)
-        self.logger.setLevel(DEBUG)
+        coloredlogs.install(level=level, logger=self.logger)
+        self.logger.setLevel(level)
 
     async def on_ready(self):            
         self.logger.debug('Setup Database')
