@@ -101,7 +101,7 @@ class RolePanel(commands.Cog):
     @group.command(name="delete", description="ロールパネルを削除します")
     @app_commands.describe(name='ロールパネルの名前')
     async def delete_panel(self, interaction: discord.Interaction, name: str):
-        panel = database.get_key('role_panels', 'guild', interaction.guild.id, 'name')
+        panel = database.get_key('role_panels', 'guild', interaction.guild.id)
         for p in panel:
             if p[1] == name:
                 panel = p
