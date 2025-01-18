@@ -171,6 +171,11 @@ class RolePanel(commands.Cog):
                 continue
             if roles:
                 channel = guild.get_channel(panel[4])
+                for role in roles:
+                    r = guild.get_role(role)
+                    if not r:
+                        self.bot.logger.error(f"Role with ID {role} not found")
+                        continue
                 if channel:
                     message = await channel.fetch_message(panel[3])
                     view = RoleDropdownView(roles)
