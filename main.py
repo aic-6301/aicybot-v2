@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from logging import getLogger, basicConfig, INFO, DEBUG
+from logging import getLogger, basicConfig, DEBUG
 import coloredlogs
 import os
 import sys
@@ -13,28 +13,24 @@ from utils import database
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 
-
-if sys.argv[0] == 'prod':
-    cmd_prefix = commands.when_mentioned_or('a.')
-    level = INFO
-else:
-    cmd_prefix = commands.when_mentioned_or('a/')
-    level = DEBUG
-
-
 class aicybot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix=cmd_prefix,
+            command_prefix=commands.when_mentioned_or('a.'),
             help_command=None,
             intents=discord.Intents.all()
         )
-        basicConfig(level=level)  # ログの基本設定を追加
+        basicConfig(level=DEBUG)  # ログの基本設定を追加
         self.logger = getLogger('AicyBot')
-        coloredlogs.install(level=level, logger=self.logger)
-        self.logger.setLevel(level)
+        coloredlogs.install(level=DEBUG, logger=self.logger)
+        self.logger.setLevel(DEBUG)
 
-    async def on_ready(self):            
+    async def on_ready(self):
+        
+        if sys.version_info < (3, 12):
+            self.logger.critical('Python 3.12以上が必要です。')
+            sys.exit()
+            
         self.logger.debug('Setup Database')
         database.setup()
         self.logger.info('Loaded Database')
@@ -59,11 +55,6 @@ class aicybot(commands.Bot):
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")
         self.logger.info('Bot is ready!')
-
-if sys.version_info < (3, 12):
-    print("This bot requires Python 3.12 or higher || Python 3.12 以上が必要です")
-    sys.exit()
-
 
 if __name__ == '__main__':
     bot = aicybot()
