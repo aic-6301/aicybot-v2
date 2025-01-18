@@ -12,8 +12,7 @@ class reboot(discord.ui.View):
     
     @discord.ui.button(label="サービスを再起動する。", style=discord.ButtonStyle.red, emoji="🔴")
     async def reboot(self, button: discord.ui.Button, interaction: discord.Interaction):
-        interaction.message.embeds[0].description =+ "\n再起動します。"
-        await interaction.message.edit(embed=interaction.message.embeds[0])
+        await interaction.response.send_message("再起動します。", ephemeral=True)
         sys.exit()
 
 

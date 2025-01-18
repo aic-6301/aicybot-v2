@@ -78,14 +78,17 @@ class RolePanel(commands.Cog):
     @group.command(name="addrole", description="ロールパネルにロールを追加します")
     @app_commands.describe(name='ロールパネルの名前', role='追加するロール')
     async def add_role(self, interaction: discord.Interaction, name: str, role: discord.Role):
-        panel = database.get_key('role_panels', 'name', name, 'id')
-        print(panel)
+        panel = database.get_key('role_panels', 'guild', interaction.guild.id)
+        for p in panel:
+            if p[1] == name:
+                panel = p
+                break
         if panel:
             if role.position >= interaction.guild.me.top_role.position:
                 embed = discord.Embed(title='エラー', description='Botより上のロールを追加することはできません。', color=discord.Color.red())
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
-            database.insert_or_update('panel_roles', ['panel_id', 'role_id'], [panel[0][0], role.id])
+            database.insert_or_update('panel_roles', ['panel_id', 'role_id'], [panel[0], role.id])
             await interaction.response.send_message(f'{role.mention} ロールがパネルに追加されました。', ephemeral=True)
 
     @group.command(name="removerole", description="ロールパネルからロールを削除します")
@@ -98,13 +101,18 @@ class RolePanel(commands.Cog):
     @group.command(name="delete", description="ロールパネルを削除します")
     @app_commands.describe(name='ロールパネルの名前')
     async def delete_panel(self, interaction: discord.Interaction, name: str):
-        database.delete('role_panels', 'name', name)
+        panel = database.get_key('role_panels', 'guild', interaction.guild.id, 'name')
+        for p in panel:
+            if p[1] == name:
+                panel = p
+                break
+        database.delete('role_panels', 'id', panel[0])
         await interaction.response.send_message(f'{name}ロールパネルが削除されました。', ephemeral=True)
     
     @group.command(name='send', description='ロールパネルを送信します')
     @app_commands.describe(name='ロールパネルの名前', channel='送信するチャンネル')
     async def send_panel(self, interaction: discord.Interaction, name: str, channel: discord.TextChannel):
-        panel = database.get_key('role_panels', 'name', name)
+        panel = database.get_key('role_panels', 'guild', interaction.guild.id)
         for p in panel:
             if p[1] == name:
                 panel = p
