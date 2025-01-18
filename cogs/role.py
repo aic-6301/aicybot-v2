@@ -69,7 +69,7 @@ class RolePanel(commands.Cog):
     @group.command(name="create", description="ロールパネルを作成します")
     @app_commands.describe(name='ロールパネルの名前')
     async def create_panel(self, interaction: discord.Interaction, name: str):
-        if database.get_key('role_panels', 'name', name):
+        if database.get_key('role_panels', 'guild', interaction.guild.id, 'name') == name:
             await interaction.response.send_message('その名前のロールパネルは既に存在します。', ephemeral=True)
             return
         database.insert_or_update('role_panels', ['name', 'guild'], [name, interaction.guild.id])
