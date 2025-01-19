@@ -29,7 +29,7 @@ class aicybot(commands.Bot):
         self.uptime = datetime.datetime.now()
 
     async def on_ready(self):
-        self.change_presence(status=discord.Status.dnd)
+        await self.change_presence(status=discord.Status.dnd)
         if sys.version_info < (3, 12):
             self.logger.critical('Python 3.12以上が必要です。')
             sys.exit()

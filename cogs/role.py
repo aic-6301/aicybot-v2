@@ -29,6 +29,7 @@ class RoleDropdown(discord.ui.Select):
                         added_roles.append(role)
                 else:
                     embed = discord.Embed(title='エラー', description='ロールが見つかりませんでした。', color=discord.Color.red())
+                    embed.set_footer(text='ロールが削除されている可能性があります。')
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                     view = RoleDropdownView(self.roles)
                     embed = interaction.message.embeds[0]
