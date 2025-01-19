@@ -184,7 +184,7 @@ class logger(commands.Cog):
         # 非アクティブメンバーキック
         elif entry.action == discord.AuditLogAction.member_prune:
             embed = discord.Embed(title="🛴 - メンバーのキック", 
-                                  description=f"非アクティブメンバーが一括キックされました。", 
+                                  description="非アクティブメンバーが一括キックされました。", 
                                   color=discord.Color.red())
             embed.add_field(name="キックされたメンバー数", value=entry.extra.members_removed)
             embed.add_field(name="非アクティブ日数", value=entry.reason.delete_members_days)
