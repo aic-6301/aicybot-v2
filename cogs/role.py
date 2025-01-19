@@ -175,7 +175,7 @@ class RolePanel(commands.Cog):
                 channel = guild.get_channel(panel[4])
                 is_valid = True
                 for role in roles:
-                    r = guild.get_role(role)
+                    r = guild.get_role(role.id)
                     if not r:
                         self.bot.logger.error(f"Role with ID {role} not found")
                         is_valid = False
