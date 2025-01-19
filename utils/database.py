@@ -7,6 +7,8 @@ setup_query = [
     'CREATE TABLE IF NOT EXISTS role_panels (id INTEGER PRIMARY KEY, name TEXT, guild INTEGER, message_id INTEGER DEFAULT 0, channel_id INTEGER DEFAULT 0)',
     'CREATE TABLE IF NOT EXISTS panel_roles (panel_id INTEGER, role_id INTEGER, FOREIGN KEY(panel_id) REFERENCES role_panels(id))',
     'CREATE TABLE IF NOT EXISTS autoreply (id TEXT(8) PRIMARY KEY, keyword TEXT, reply TEXT, user INTEGER(18), guild INTEGER)',
+    'CREATE TABLE IF NOT EXISTS ticket (guild INTEGER PRIMARY KEY, bool BOOLEAN, category INTEGER DEFAULT NULL, channel INTEGER DEFAULT NULL)',
+    'CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY, user INTEGER, channel INTEGER, guild INTEGER)',
 ]
 
 def connect():
