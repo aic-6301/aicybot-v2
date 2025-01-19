@@ -6,6 +6,8 @@ from utils import database
 
 
 class settings(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
 

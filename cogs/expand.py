@@ -10,6 +10,8 @@ regex_discord_message_url = (
     '(?P<guild>[0-9]{17,20})/(?P<channel>[0-9]{17,20})/(?P<message>[0-9]{17,20})(?!>)'
 )
 class expand(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
         

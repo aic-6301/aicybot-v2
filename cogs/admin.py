@@ -17,6 +17,8 @@ class reboot(discord.ui.View):
 
 
 class admin(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
     

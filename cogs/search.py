@@ -8,6 +8,8 @@ import Paginator
 import typing
 
 class search(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
     

@@ -5,6 +5,8 @@ from discord import app_commands
 from utils import database
 
 class server(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
 

@@ -4,6 +4,8 @@ from discord import app_commands
 
 
 class spotify(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
 

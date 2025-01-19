@@ -12,6 +12,8 @@ from utils import database
 
 
 class autoreply(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
         

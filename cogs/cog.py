@@ -3,12 +3,15 @@ from discord.ext import commands
 from discord import app_commands
 
 import Paginator
-
+import asyncio
+import datetime
 
 disabled_NextButton = discord.ui.Button(emoji=discord.PartialEmoji(name="\U000025b6"), disabled=True)
 disabled_PreviousButton = discord.ui.Button(emoji=discord.PartialEmoji(name="\U000025c0"), disabled=True)
 
 class cog(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
     
@@ -114,6 +117,18 @@ class cog(commands.Cog):
             else:
                 await Paginator.Simple(ephemeral=True).start(interaction, embeds)
                 
+    async def cog_load(self):
+        await self.change_status()
+    
+    async def change_status(self):
+        while True:
+            await self.bot.change_presence(activity=discord.CustomActivity(name=f'{len(self.bot.guilds)} Guilds | {len(self.bot.users)} Users'))
+            await asyncio.sleep(10)
+            await self.bot.change_presence(activity=discord.CustomActivity(name=f'/help | {len(self.bot.commands)} Commands'))
+            await asyncio.sleep(10)
+            time = datetime.datetime.now() - self.bot.uptime
+            await self.bot.change_presence(activity=discord.CustomActivity(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60}秒'))
+            await asyncio.sleep(10)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(cog(bot))

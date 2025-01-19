@@ -60,6 +60,8 @@ class RoleDropdownView(discord.ui.View):
         self.add_item(RoleDropdown(roles))
 
 class RolePanel(commands.Cog):
+    bot: commands.Bot
+    
     def __init__(self, bot):
         self.bot = bot
         

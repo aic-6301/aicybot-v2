@@ -2,11 +2,13 @@ import discord
 from discord.ext import commands
 
 from logging import getLogger, basicConfig, DEBUG
+from dotenv import load_dotenv
 import coloredlogs
 import os
 import sys
-from dotenv import load_dotenv
 import traceback
+import asyncio
+import datetime
 
 from utils import database
 
@@ -24,9 +26,10 @@ class aicybot(commands.Bot):
         self.logger = getLogger('AicyBot')
         coloredlogs.install(level=DEBUG, logger=self.logger)
         self.logger.setLevel(DEBUG)
+        self.uptime = datetime.datetime.now()
 
     async def on_ready(self):
-        
+        self.change_presence(status=discord.Status.dnd)
         if sys.version_info < (3, 12):
             self.logger.critical('Python 3.12以上が必要です。')
             sys.exit()
@@ -55,6 +58,9 @@ class aicybot(commands.Bot):
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")
         self.logger.info('Bot is ready!')
+        await self.change_status()
+
+    
 
 if __name__ == '__main__':
     bot = aicybot()
