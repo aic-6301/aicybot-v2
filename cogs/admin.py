@@ -11,8 +11,8 @@ class reboot(discord.ui.View):
         super().__init__()
     
     @discord.ui.button(label="サービスを再起動する。", style=discord.ButtonStyle.red, emoji="🔴")
-    async def reboot(self, button: discord.ui.Button, interaction: discord.Interaction):
-        await interaction.response.send_message("再起動します。", ephemeral=True)
+    async def reboot(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("再起動しています...", ephemeral=True)
         sys.exit()
 
 
@@ -54,7 +54,7 @@ class admin(commands.Cog):
             if "Already up to date." in process.stdout:
                 embed.title = "✅アップデート"
                 embed.description = "アップデートは不要です。"
-                await interaction.edit_original_response(embed=embed)
+                await interaction.edit_original_response(embed=embed, view=reboot())
                 return
             else:
                 embed.title = "✅アップデート"
