@@ -138,7 +138,7 @@ class RolePanel(commands.Cog):
         view = RoleDropdownView(roles)
         embed = discord.Embed(title=panel[1], description='ロールを選択してください', color=discord.Color.blurple())
         message = await channel.send(embed=embed, view=view)
-        database.insert_or_update('role_panels', ['message_id', 'channel_id'], [message.id, message.channel.id], key_column='name', key_value=name)
+        database.insert_or_update('role_panels', ['message_id', 'channel_id'], [message.id, message.channel.id], key_column='id', key_value=p[0])
         await interaction.response.send_message(f'{name}ロールパネルが送信されました。', ephemeral=True)
     
     
