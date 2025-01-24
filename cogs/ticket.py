@@ -71,7 +71,7 @@ class SelectChannels(discord.ui.ChannelSelect):
         data = database.get_key('ticket', 'id', self.id)
         type = 'category' if self.channel_types[0] == discord.ChannelType.category else 'channel'
         database.update('ticket', [type], [int(self.values[0].id)], 'id', self.id)
-        await interaction.response.edit_message(content=f'正常に変更しました。', view=None)
+        await interaction.response.edit_message(content='正常に変更しました。', view=None)
         return
 
 class SelectRole(discord.ui.RoleSelect):
