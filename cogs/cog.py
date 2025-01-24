@@ -15,7 +15,6 @@ class cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.rpc = 0
-        self.change_status.start()
     
     @app_commands.command(name='about', description="Botの情報を表示します")
     async def about(self, interaction: discord.Interaction):
@@ -206,19 +205,6 @@ class cog(commands.Cog):
         embed.add_field(name="実行ユーザー", value=f"{interaction.user.name} ({interaction.user.id})", inline=False)
         embed.add_field(name="実行サーバー", value=f"{interaction.guild.name} ({interaction.guild.id})", inline=False)
         await self.bot.get_channel(1033496616130334784).send(embed=embed)
-                
-    @tasks.loop(seconds=10)
-    async def change_status(self):
-        if self.rpc == 0:
-            await self.bot.change_presence(activity=discord.Game(name=f'{len(self.bot.guilds)} Guilds | {len(self.bot.users)} Users'))
-            self.rpc += 1
-        elif self.rpc == 1:
-            await self.bot.change_presence(activity=discord.Game(name=f'/help | More at /about'))
-            self.rpc += 1 
-        elif self.rpc == 2:
-            time = datetime.datetime.now() - self.bot.uptime
-            await self.bot.change_presence(activity=discord.Game(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60}秒'))
-            self.rpc = 0
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(cog(bot))

@@ -1,15 +1,12 @@
 import sqlite3
 
 setup_query = [
-    "CREATE TABLE IF NOT EXISTS \"expand\" (guild INTEGER PRIMARY KEY, bool BOOLEAN)",
-    "CREATE TABLE IF NOT EXISTS \"join\" (guild INTEGER PRIMARY KEY, bool BOOLEAN, channel INTEGER DEFAULT NULL)",
-    "CREATE TABLE IF NOT EXISTS \"join_bot\" (guild INTEGER PRIMARY KEY, bool BOOLEAN, role INTEGER, channel INTEGER DEFAULT NULL)",
+    "CREATE TABLE IF NOT EXISTS settings (guild INTEGER NOT NULL PRIMARY KEY, log_ch INTEGER DEFAULT 0, welcome_channel INTEGER DEFAULT 0, expand BOOLEAN, bot_role INTEGER DEFAULT 0)",
     'CREATE TABLE IF NOT EXISTS role_panels (id INTEGER PRIMARY KEY, name TEXT, guild INTEGER, message_id INTEGER DEFAULT 0, channel_id INTEGER DEFAULT 0)',
     'CREATE TABLE IF NOT EXISTS panel_roles (panel_id INTEGER, role_id INTEGER, FOREIGN KEY(panel_id) REFERENCES role_panels(id))',
     'CREATE TABLE IF NOT EXISTS autoreply (id TEXT(8) PRIMARY KEY, keyword TEXT, reply TEXT, user INTEGER(18), guild INTEGER)',
     'CREATE TABLE IF NOT EXISTS ticket (id TEXT(8) NOT NULL, guild INTEGER NOT NULL, name TEXT NOT NULL, category INTEGER DEFAULT 0, channel INTEGER DEFAULT 0, roles TEXT DEFAULT 0, unlimited BOOLEAN DEFAULT 0)',
     'CREATE TABLE IF NOT EXISTS tickets (id TEXT(8) PRIMARY KEY, ticket_id TEXT, user INTEGER, channel INTEGER, guild INTEGER, number INTEGER, messages TEXT, closed BOOLEAN, responser INTEGER DEFAULT 0, FOREIGN KEY(ticket_id) REFERENCES ticket(id))',
-    'CREATE TABLE IF NOT EXISTS log (guild INTEGER PRIMARY KEY, bool BOOLEAN, channel INTEGER NOT NULL)',
 ]
 
 def connect():
@@ -100,16 +97,3 @@ def run_sql(sql):
     with connect() as conn:
         c = conn.cursor()
         c.execute(sql)
-
-# Specific functions using the helper functions
-def set(table, key, value, guild: int):
-    insert_or_update(table, [key], [value], key_value=guild)
-
-def set_keys(table, *keys, value, guild: int):
-    insert_or_update(table, keys, [guild, value], key_value=guild)
-
-def set_channel(table, value, channel: int, guild: int):
-    insert_or_update(table, ['guild', 'bool', 'channel'], [guild, value, channel], key_value=guild)
-
-def set_channel_role(table, value, role: int, channel: int, guild: int):
-    insert_or_update(table, ['guild', 'bool', 'role', 'channel'], [guild, value, role, channel], key_value=guild)

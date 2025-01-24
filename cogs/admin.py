@@ -5,6 +5,8 @@ from discord import app_commands
 import subprocess
 import sys
 
+from utils import database
+
 
 class reboot(discord.ui.View):
     def __init__(self):
