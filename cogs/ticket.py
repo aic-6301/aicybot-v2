@@ -14,7 +14,7 @@ class change_name(discord.ui.Modal):
         
         self.value = None
         
-        self.name = discord.TextInput(label='新しい名前', placeholder='新しい名前を入力してください。', required=True, style=discord.TextStyle.short)
+        self.name = discord.ui.TextInput(label='新しい名前', placeholder='新しい名前を入力してください。', required=True, style=discord.TextStyle.short)
         
         self.add_item(self.name)
         self.id = id
@@ -32,23 +32,32 @@ class close_reason(discord.ui.Modal):
         
         self.value = None
         
-        self.reason = discord.TextInput(label='理由', placeholder='チケットを閉じる理由を入力してください。', required=True, style=discord.TextStyle.long)
+        self.reason = discord.ui.TextInput(label='理由', placeholder='チケットを閉じる理由を入力してください。', required=True, style=discord.TextStyle.long)
         
         self.add_item(self.reason)
     
     async def on_submit(self, interaction: discord.Interaction):
-        data = database.get_key('tickets', 'channel', interaction.channel.id)
+        ch = interaction.channel
         self.value = self.reason.value
+        data = database.get_key('tickets', 'channel', interaction.channel.id)
         for ticket in data:
-            if ticket[4] == interaction.guild.id:
-                if ticket[2] == interaction.user.id:
-                    await interaction.response.send_message('自分のチケットには返信できません。', ephemeral=True)
-                    return
-                database.update('tickets', ['closed', 'reason'], [True, self.value], 'channel', interaction.channel.id)
+            if ticket[3] == ch.id:
+                d = database.get_key('ticket', 'id', ticket[1])
+                log_ch = interaction.guild.get_channel(d[0][4])
+                em = discord.Embed(title='チケット', description=f'{interaction.user.mention} がチケットを閉じました。', color=discord.Color.red())
+                em.add_field(name='チケット', value=f'<#{ch.id}>')
+                em.add_field(name='チケットID', value=f'{ticket[5]}')
+                em.add_field(name='作成者', value=f'<@{ticket[2]}>')
+                em.add_field(name='担当者', value=f'<@{ticket[8]}>' if ticket[8] else 'なし')
+                em.add_field(name='閉じた人', value=f'{interaction.user.mention}')
+                em.add_field(name='理由', value=f'{self.value}')
+                await log_ch.send(embed=em)
+                messages = [message async for message in ch.history(limit=None)]
+                database.update('tickets', ['closed', 'messages'], [True, f'{messages}'], 'channel', ch.id)
                 await interaction.channel.delete()
-                interaction.response.pong()
+                await self.stop()
+                await interaction.response.pong()
                 return
-
 class SelectChannels(discord.ui.ChannelSelect):
     def __init__(self, id, guild, type):
         super().__init__(placeholder='チャンネルを選択してください。', min_values=1, max_values=1)
@@ -88,7 +97,7 @@ class ticket_settings(discord.ui.View):
         
     @discord.ui.button(label='名前を変更', style=discord.ButtonStyle.primary, emoji='📝')
     async def change_name(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(view=change_name(self.id))
+        await interaction.response.send_modal(change_name(self.id))
     
     @discord.ui.button(label='カテゴリを変更', style=discord.ButtonStyle.primary, emoji='📁')
     async def change_category(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -121,14 +130,11 @@ class close_ticket(discord.ui.View):
     
     @discord.ui.button(label='閉じる', style=discord.ButtonStyle.danger, emoji='🗑️')
     async def close(self, interaction: discord.Interaction, button: discord.ui.Button):
-        print('fire')
         ch = interaction.channel
         data = database.get_key('tickets', 'channel', interaction.channel.id)
         for ticket in data:
             if ticket[3] == ch.id:
-                print(ticket)
                 d = database.get_key('ticket', 'id', ticket[1])
-                print(d)
                 log_ch = interaction.guild.get_channel(d[0][4])
                 em = discord.Embed(title='チケット', description=f'{interaction.user.mention} がチケットを閉じました。', color=discord.Color.red())
                 em.add_field(name='チケット', value=f'<#{ch.id}>')
@@ -139,7 +145,7 @@ class close_ticket(discord.ui.View):
                 messages = [message async for message in ch.history(limit=None)]
                 database.update('tickets', ['closed', 'messages'], [True, f'{messages}'], 'channel', ch.id)
                 await interaction.channel.delete()
-                interaction.response.pong()
+                await interaction.response.pong()
                 return
         await interaction.response.send_message('チケットが見つかりません。', ephemeral=True)
 
@@ -158,7 +164,6 @@ class ticket(commands.Cog):
         data = database.get_key('ticket', 'guild', interaction.guild.id)
         if data:
             for ticket in data:
-                print(ticket)
                 if ticket[2] == name:
                     await interaction.response.send_message(f'同じ名前のチケットが既に存在します。', ephemeral=True)
                     return
@@ -244,13 +249,11 @@ class ticket(commands.Cog):
                             await interaction.response.send_message(f'既にチケットを作成しています。\nチケットはこちら:<#{t[3]}>', ephemeral=True)
                             return
 
-                    number = 0
-                    for i in range(1, 1000):
-                        d = database.get_key('tickets', 'number', i)
-                        print(d)
-                        if not d:
-                            number = i
-                            break
+                    d = database.get_key('tickets', 'ticket_id', ticket[0], 'number')
+                    number = 1
+                    existing_numbers = {t[0] for t in d}
+                    while number in existing_numbers:
+                        number += 1
                     category = interaction.guild.get_channel(ticket[3])
                     log_ch = interaction.guild.get_channel(ticket[4])
                     admin_role = interaction.guild.get_role(ticket[6])
@@ -263,7 +266,7 @@ class ticket(commands.Cog):
                     channel = await category.create_text_channel(name=f'チケット-{number}', overwrites=overwrites)
                     view = discord.ui.View()
                     view.add_item(discord.ui.Button(label='チケットを閉じる', style=discord.ButtonStyle.danger, emoji='🗑️', custom_id='close_ticket'))
-                    view.add_item(discord.ui.Button(label='チケットを閉じる', style=discord.ButtonStyle.danger, emoji='🗑️', custom_id='close_ticket_reason'))
+                    view.add_item(discord.ui.Button(label='理由をつけてチケットを閉じる', style=discord.ButtonStyle.danger, emoji='🗑️', custom_id='close_ticket_reason'))
                     view.add_item(discord.ui.Button(label='チケットを担当する', style=discord.ButtonStyle.green, emoji='🖐️', custom_id='response_ticket'))
                     embed = discord.Embed(title='チケット', description='チケットを作成しました。', color=discord.Color.blurple())
                     mention = ''
@@ -288,7 +291,7 @@ class ticket(commands.Cog):
             await interaction.response.send_message('チケットを閉じますか？', view=close_ticket())
         
         if interaction.data.get('custom_id') and interaction.data['custom_id'] == 'close_ticket_reason':
-            await interaction.response.send_modal(view=close_reason())
+            await interaction.response.send_modal(close_reason())
         
         if interaction.data.get('custom_id') and interaction.data['custom_id'] == 'response_ticket':
             number = interaction.channel.name.split('-')[1]
