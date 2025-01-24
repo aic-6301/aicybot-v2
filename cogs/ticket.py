@@ -182,7 +182,7 @@ class ticket(commands.Cog):
         for ticket in data:
             if ticket[2] == name:
                 database.delete('ticket', 'id', ticket[0])
-                await interaction.response.send_message(f'チケットを削除しました。', ephemeral=True)
+                await interaction.response.send_message('チケットを削除しました。', ephemeral=True)
                 return
         await interaction.response.send_message('チケットが見つかりません。', ephemeral=True)
     
