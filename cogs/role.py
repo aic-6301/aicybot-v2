@@ -29,6 +29,7 @@ class RoleDropdown(discord.ui.Select):
                         added_roles.append(role)
                 else:
                     embed = discord.Embed(title='エラー', description='ロールが見つかりませんでした。', color=discord.Color.red())
+                    embed.set_footer(text='ロールが削除されている可能性があります。')
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                     view = RoleDropdownView(self.roles)
                     embed = interaction.message.embeds[0]
@@ -137,7 +138,7 @@ class RolePanel(commands.Cog):
         view = RoleDropdownView(roles)
         embed = discord.Embed(title=panel[1], description='ロールを選択してください', color=discord.Color.blurple())
         message = await channel.send(embed=embed, view=view)
-        database.insert_or_update('role_panels', ['message_id', 'channel_id'], [message.id, message.channel.id], key_column='name', key_value=name)
+        database.insert_or_update('role_panels', ['message_id', 'channel_id'], [message.id, message.channel.id], key_column='id', key_value=p[0])
         await interaction.response.send_message(f'{name}ロールパネルが送信されました。', ephemeral=True)
     
     
@@ -175,7 +176,7 @@ class RolePanel(commands.Cog):
                 channel = guild.get_channel(panel[4])
                 is_valid = True
                 for role in roles:
-                    r = guild.get_role(role)
+                    r = guild.get_role(role.id)
                     if not r:
                         self.bot.logger.error(f"Role with ID {role} not found")
                         is_valid = False

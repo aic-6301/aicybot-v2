@@ -7,21 +7,6 @@ from utils import database
 class logger(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channels = {}
-        self.cache_channel_loop.start()
-    
-    def cache_channel(self):
-        for guild in self.bot.guilds:
-            data = database.get('log', guild.id)
-            self.channels[guild.id] = guild.get_channel(data[2]) if data else None
-        self.bot.logger.debug('Log Channels Cached.')
-        
-    @tasks.loop(minutes=3)
-    async def cache_channel_loop(self):
-        self.cache_channel()
-        
-    async def cog_unload(self):
-        self.cache_channel_loop.stop()
     
     # メッセージ編集
     @commands.Cog.listener()
@@ -37,8 +22,8 @@ class logger(commands.Cog):
         embed.add_field(name="編集後", value=after.content)
         embed.add_field(name="メッセージリンク", value = after.jump_url, inline=False)
         embed.add_field(name="チャンネル", value=before.channel.mention, inline=False)
-        if self.channels[before.guild.id] is not None:
-            await self.channels[before.guild.id].send(embed=embed)
+        if database.get('log', before.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', before.guild.id)[2]).send(embed=embed)
     
     # メッセージ削除
     @commands.Cog.listener()
@@ -50,8 +35,8 @@ class logger(commands.Cog):
                               color=discord.Color.red())
         embed.add_field(name="内容", value=message.content)
         embed.add_field(name="チャンネル", value=message.channel.mention)
-        if self.channels[message.guild.id] is not None:
-            await self.channels[message.guild.id].send(embed=embed)
+        if database.get('log', message.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', message.guild.id)[2]).send(embed=embed)
     
     # チャンネル更新
     @commands.Cog.listener()
@@ -67,8 +52,8 @@ class logger(commands.Cog):
         embed.add_field(name="変更後", value=(f'> 名前\n{after.name}\n' if before.name != after.name else "") + (f'> トピック\n{after.topic}' if before.topic != after.topic else ""))
         async for entry in before.guild.audit_logs(limit=1, action=discord.AuditLogAction.channel_update):
             embed.add_field(name="変更した人", value=entry.user.mention)
-        if self.channels[before.guild.id] is not None:
-            await self.channels[before.guild.id].send(embed=embed)
+        if database.get('log', before.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', before.guild.id)[2]).send(embed=embed)
     
     # チャンネル削除
     @commands.Cog.listener()
@@ -80,8 +65,8 @@ class logger(commands.Cog):
         embed.add_field(name="ID", value=channel.id)
         async for entry in channel.guild.audit_logs(limit=1, action=discord.AuditLogAction.channel_delete):
             embed.add_field(name="削除した人", value=entry.user.mention)
-        if self.channels[channel.guild.id] is not None:
-            await self.channels[channel.guild.id].send(embed=embed)
+        if database.get('log', channel.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', channel.guild.id)[2]).send(embed=embed)
     
     
     # メンバー参加
@@ -95,8 +80,8 @@ class logger(commands.Cog):
         embed.add_field(name="アカウント作成日", value=member.created_at)
         embed.add_field(name="現在のサーバー人数", value=f"{member.guild.member_count}人")
         embed.set_thumbnail(url=member.avatar.url if member.avatar else member.default_avatar.url)
-        if self.channels[member.guild.id] is not None:
-            await self.channels[member.guild.id].send(embed=embed)
+        if database.get('log', member.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', member.guild.id)[2]).send(embed=embed)
     
     # メンバー退出
     @commands.Cog.listener()
@@ -108,8 +93,29 @@ class logger(commands.Cog):
         embed.add_field(name="ID", value=member.id)
         embed.add_field(name="所有していたロール", value=", ".join([role.mention for role in member.roles if role.name != "@everyone"]))
         embed.set_thunmbnail(url=member.avatar.url if member.avatar else member.default_avatar.url)
-        if self.channels[member.guild.id] is not None:
-            await self.channels[member.guild.id].send(embed=embed)
+        if database.get('log', member.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', member.guild.id)[2]).send(embed=embed)
+            
+    # ロール更新
+    @commands.Cog.listener()
+    async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
+        embed = discord.Embed(title="🔃 - ロール更新",
+                              description=f"{before.mention}が更新されました。",
+                              color=discord.Color.orange())
+        embed.add_field(name="更新前", value=(f'> 名前\n{after.name}\n' if before.name and before.name != after.name else "") + 
+                            (f'> 色\n{after.color}' if before.color and before.color != after.color else "") +  
+                            (f'> 絵文字\n{after.unicode_emoji}' if before.unicode_emoji and before.unicode_emoji != after.unicode_emoji else "") +
+                            (f'> 位置\n{after.position}' if before.position and before.position != after.position else "") + 
+                            (f'> 権限\n{after.permissions}' if before.permissions and before.permissions != after.permissions else ""))
+        embed.add_field(name="更新後", value=(f'> 名前\n{after.name}\n' if before.name and before.name != after.name else "") + 
+                            (f'> 色\n{after.color}' if before.color and before.color != after.color else "") +  
+                            (f'> 絵文字\n{after.unicode_emoji}' if before.unicode_emoji and before.unicode_emoji != after.unicode_emoji else "") +
+                            (f'> 位置\n{after.position}' if before.position and before.position != after.position else "") + 
+                            (f'> 権限\n{after.permissions}' if before.permissions and before.permissions != after.permissions else ""))
+        async for entry in before.guild.audit_logs(limit=1, action=discord.AuditLogAction.role_update):
+            embed.add_field(name="更新した人", value=entry.user.mention)
+        if database.get('log', before.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', before.guild.id)[2]).send(embed=embed)
         
     
     # いろいろ
@@ -231,7 +237,7 @@ class logger(commands.Cog):
         # チャンネル削除
         elif entry.action == discord.AuditLogAction.channel_delete:
             embed = discord.Embed(title="🗑️ - チャンネル削除", 
-                                  description=f"{entry.target.mention}が削除されました。", 
+                                  description=f"{entry.target.name}が削除されました。", 
                                   color=discord.Color.red())
             embed.add_field(name="名前", value=entry.target.name)
             embed.add_field(name="ID", value=entry.target.id)
@@ -252,30 +258,11 @@ class logger(commands.Cog):
         # ロール削除
         elif entry.action == discord.AuditLogAction.role_delete:
             embed = discord.Embed(title="🗑️ - ロール削除", 
-                                  description=f"{entry.target.mention}が削除されました。", 
+                                  description=f"{entry.target.name}が削除されました。", 
                                   color=discord.Color.red())
             embed.add_field(name="名前", value=entry.target.name)
             embed.add_field(name="ID", value=entry.target.id)
             embed.add_field(name="削除した人", value=entry.user.mention)
-            
-        # ロール更新
-        elif entry.action == discord.AuditLogAction.role_update:
-            embed = discord.Embed(title="🔃 - ロール更新", 
-                                  description=f"{entry.before.mention}が更新されました。", 
-                                  color=discord.Color.orange())
-            embed.add_field(name="変更前",
-                            value=(f'> 名前\n{entry.after.name}\n' if entry.before.name != entry.after.name else "") + 
-                            (f'> 色\n{entry.after.color}' if entry.before.color != entry.after.color else "") +  
-                            (f'> 絵文字\n{entry.after.unicode_emoji}' if entry.before.unicode_emoji != entry.after.unicode_emoji else "") +
-                            (f'> 位置\n{entry.after.position}' if entry.before.position != entry.after.position else "") + 
-                            (f'> 権限\n{entry.after.permissions}' if entry.before.permissions != entry.after.permissions else ""))
-            embed.add_field(name="変更後", 
-                            value=(f'> 名前\n{entry.after.name}\n' if entry.before.name != entry.after.name else "") + 
-                            (f'> 色\n{entry.after.color}' if entry.before.color != entry.after.color else "") +  
-                            (f'> 絵文字\n{entry.after.unicode_emoji}' if entry.before.unicode_emoji != entry.after.unicode_emoji else "") + 
-                            (f'> 位置\n{entry.after.position}' if entry.before.position != entry.after.position else "") +
-                            (f'> 権限\n{entry.after.permissions}' if entry.before.permissions != entry.after.permissions else ""))
-            embed.add_field(name="変更した人", value=entry.user.mention)
             
         # 招待作成
         elif entry.action == discord.AuditLogAction.invite_create:
@@ -331,12 +318,12 @@ class logger(commands.Cog):
                 
         else:
             return
-        if self.channels[entry.guild.id] is not None:
-            await self.channels[entry.guild.id].send(embed=embed)
+        if database.get('log', entry.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', entry.guild.id)[2]).send(embed=embed)
     
     # VC参加/移動/退出
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before: discord.Member, after: discord.Member):
+    async def on_voice_state_update(self, member: discord.Member, before: discord.Member, after: discord.Member):
         if before.channel == after.channel:
             return
         if before.channel is None and after.channel is not None:
@@ -351,8 +338,8 @@ class logger(commands.Cog):
             embed = discord.Embed(title="🚶‍♂️‍➡️ - VC移動", 
                                   description=f"{member.mention}が{before.channel.mention}から{after.channel.mention}に移動しました。", 
                                   color=discord.Color.blurple())
-        if self.channels[member.guild.id] is not None:
-            await self.channels[member.guild.id].send(embed=embed)
+        if database.get('log', member.guild.id) is not None:
+            await self.bot.get_channel(database.get('log', member.guild.id)[2]).send(embed=embed)
     
     
 async def setup(bot: commands.Bot) -> None:

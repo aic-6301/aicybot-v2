@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord import app_commands
 
 import Paginator
@@ -14,6 +14,8 @@ class cog(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
+        self.rpc = 0
+        self.change_status.start()
     
     @app_commands.command(name='about', description="Botの情報を表示します")
     async def about(self, interaction: discord.Interaction):
@@ -116,19 +118,107 @@ class cog(commands.Cog):
                 await interaction.response.send_message(embed=embeds[0], ephemeral=True)
             else:
                 await Paginator.Simple(ephemeral=True).start(interaction, embeds)
-                
-    # async def cog_load(self):
-    #     await self.change_status()
+            
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
+        if isinstance(error, commands.errors.BadArgument):
+            await ctx.reply(embed=discord.Embed(title="エラー - Bad Argument", 
+                                                description="指定された引数がエラーを起こしているため実行出来ません。", 
+                                                color=discord.Color.red(), timestamp=ctx.message.created_at))
+        elif isinstance(error, commands.errors.CommandNotFound):
+            await ctx.reply(embed=discord.Embed(title="エラー - Command Not Found", 
+                                                description="コマンドが存在しません。", 
+                                                color=discord.Color.red(), 
+                                                timestamp=ctx.message.created_at))
+        elif isinstance(error, commands.errors.CommandOnCooldown):
+            await ctx.reply(embed=discord.Embed(title="クールダウン", 
+                                                description="コマンドはクールダウン中です。"+
+                                                f"\n{discord.utils.format_dt(error.retry_after, style='R')}後に再度実行してください。", 
+                                                color=discord.Color.red(), 
+                                                timestamp=ctx.message.created_at))
+        elif isinstance(error, commands.errors.MemberNotFound):
+            await ctx.reply(embed=discord.Embed(title="エラー - Member Not Found", 
+                                                description="メンバーが存在しません。", 
+                                                color=discord.Color.red(), 
+                                                timestamp=ctx.message.created_at))
+        elif isinstance(error, commands.errors.UserNotFound):
+            await ctx.reply(embed=discord.Embed(title="エラー - User Not Found", 
+                                                description="ユーザーが存在しません", 
+                                                color=discord.Color.red(), 
+                                                timestamp=ctx.message.created_at))
+        elif isinstance(error, commands.errors.MissingPermissions):
+            await ctx.reply(embed=discord.Embed(title="エラー - Missing Permissions", 
+                                                description="権限が不足しています。", 
+                                                color=discord.Color.red(), 
+                                                timestamp=ctx.message.created_at))
+        elif isinstance(error, commands.errors.MissingRequiredArgument):
+            await ctx.reply(embed=discord.Embed(title="エラー - Missing Required Argument", 
+                                                description="必要な引数が足りません。", 
+                                                color=discord.Color.red(), 
+                                                timestamp=ctx.message.created_at))
+        elif isinstance(error, commands.errors.BotMissingPermissions):
+            await ctx.reply(embed=discord.Embed(title="エラー - Bot Missing Permissions", 
+                                                description="Botが実行するのに必要な権限が足りません。", 
+                                                color=discord.Color.red(), 
+                                                timestamp=ctx.message.created_at))
+        else:
+            await ctx.reply(embed=discord.Embed(title="エラー - Unknown Error", 
+                                                description=f"エラーが発生しました。\nエラー内容：{error} \nエラーID:{ctx.message.id}", 
+                                                color=discord.Color.red(), 
+                                                timestamp=ctx.message.created_at
+                                                ).set_footer(
+                                                    text="エラーIDをコピーして、お問い合わせサーバーまでお問い合わせください。"
+                                                ))
+        embed = discord.Embed(title="エラー情報", description="", color=discord.Color.red(), timestamp=ctx.message.created_at)
+        embed.add_field(name="エラー内容", value=error, inline=False)
+        embed.add_field(name="エラーID", value=ctx.message.id, inline=False)
+        embed.add_field(name="実行ユーザー", value=f"{ctx.author.name} ({ctx.author.id})", inline=False)
+        embed.add_field(name="実行サーバー", value=f"{ctx.guild.name} ({ctx.guild.id})", inline=False)
+        await self.bot.get_channel(1033496616130334784).send(embed=embed)
     
-    # async def change_status(self):
-    #     while True:
-    #         await self.bot.change_presence(activity=discord.CustomActivity(name=f'{len(self.bot.guilds)} Guilds | {len(self.bot.users)} Users'))
-    #         await asyncio.sleep(10)
-    #         await self.bot.change_presence(activity=discord.CustomActivity(name=f'/help | {len(self.bot.commands)} Commands'))
-    #         await asyncio.sleep(10)
-    #         time = datetime.datetime.now() - self.bot.uptime
-    #         await self.bot.change_presence(activity=discord.CustomActivity(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60}秒'))
-    #         await asyncio.sleep(10)
+    @commands.Cog.listener()
+    async def on_app_command_error(self, interaction:discord.Interaction, error: discord.app_commands.AppCommandError):
+        if isinstance(error, discord.app_commands.errors.BotMissingPermissions):
+            await interaction.response.send_message(
+                embed=discord.Embed(title="エラー - Bot Missing Permissions", 
+                                    description="Botが実行するのに必要な権限が足りません。", 
+                                    color=discord.Color.red(), 
+                                    timestamp=interaction.message.created_at
+                                    ))
+        elif isinstance(error, discord.app_commands.errors.CommandOnCooldown):
+            await interaction.response.send_message(
+                embed=discord.Embed(title="クールダウン",
+                                    description=f"コマンドはクールダウン中です。\n{discord.utils.format_dt(error.retry_after, style='R')}後に再度実行してください。",
+                                    color=discord.Color.red(),
+                                    timestamp=interaction.message.created_at
+                                    ))
+        else:
+            await interaction.response.send_message(
+                embed=discord.Embed(title="エラー - Unknown Error",
+                                    description=f"エラーが発生しました。\nエラー内容：{error} \nエラーID:{interaction.message.id}",
+                                    color=discord.Color.red(),
+                                    timestamp=interaction.message.created_at
+                                    ).set_footer(text="エラーIDをコピーして、お問い合わせサーバーまでお問い合わせください。")
+                )
+        embed = discord.Embed(title="Error Info", description="", color=discord.Color.red(), timestamp=interaction.message.created_at)
+        embed.add_field(name="エラー内容", value=error, inline=False)
+        embed.add_field(name="エラーID", value=interaction.message.id, inline=False)
+        embed.add_field(name="実行ユーザー", value=f"{interaction.user.name} ({interaction.user.id})", inline=False)
+        embed.add_field(name="実行サーバー", value=f"{interaction.guild.name} ({interaction.guild.id})", inline=False)
+        await self.bot.get_channel(1033496616130334784).send(embed=embed)
+                
+    @tasks.loop(seconds=10)
+    async def change_status(self):
+        if self.rpc == 0:
+            await self.bot.change_presence(activity=discord.Game(name=f'{len(self.bot.guilds)} Guilds | {len(self.bot.users)} Users'))
+            self.rpc += 1
+        elif self.rpc == 1:
+            await self.bot.change_presence(activity=discord.Game(name=f'/help | More at /about'))
+            self.rpc += 1 
+        elif self.rpc == 2:
+            time = datetime.datetime.now() - self.bot.uptime
+            await self.bot.change_presence(activity=discord.Game(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60}秒'))
+            self.rpc = 0
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(cog(bot))
