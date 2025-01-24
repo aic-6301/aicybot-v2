@@ -84,7 +84,7 @@ class SelectRole(discord.ui.RoleSelect):
         data = database.get_key('ticket', 'id', self.id)
         roles = [int(value.id) for value in self.values]
         database.update('ticket', ['roles'], [f'{roles}'], 'id', self.id)
-        await interaction.response.edit_message(content='開かれた際にメンションされるロールを変更しました。')
+        await interaction.response.edit_message(content='開かれた際にメンションされるロールを変更しました。', view=None)
         return
 
 
