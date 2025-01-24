@@ -222,7 +222,7 @@ class ticket(commands.Cog):
                 await channel.send(embed=embed, view = view)
                 await interaction.response.send_message('チケットを送信しました。', ephemeral=True)
                 return
-        await interaction.response.send_message(f'チケットが見つかりません。', ephemeral=True)
+        await interaction.response.send_message('チケットが見つかりません。', ephemeral=True)
     
     @tickets.command(name='setting', description='チケットの設定を変更します。')
     @app_commands.describe(name='チケットの名前')
