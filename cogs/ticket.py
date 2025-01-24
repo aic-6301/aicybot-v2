@@ -220,7 +220,7 @@ class ticket(commands.Cog):
                 view.add_item(discord.ui.Button(label='チケットを開く', style=discord.ButtonStyle.primary, emoji='🎫', custom_id='create_ticket'))
                 embed = discord.Embed(title=ticket[2], description='チケットはこちらから')
                 await channel.send(embed=embed, view = view)
-                await interaction.response.send_message(f'チケットを送信しました。', ephemeral=True)
+                await interaction.response.send_message('チケットを送信しました。', ephemeral=True)
                 return
         await interaction.response.send_message(f'チケットが見つかりません。', ephemeral=True)
     
