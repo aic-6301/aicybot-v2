@@ -168,7 +168,7 @@ class ticket(commands.Cog):
                     await interaction.response.send_message('同じ名前のチケットが既に存在します。', ephemeral=True)
                     return
             if len(data) >= 3 and not data[6]:
-                await interaction.response.send_message(f'作成可能なチケットの上限に達しています。', ephemeral=True)
+                await interaction.response.send_message('作成可能なチケットの上限に達しています。', ephemeral=True)
                 return
         id = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
         database.insert_or_update('ticket', ['id', 'guild', 'name', 'category', 'channel'], [id, interaction.guild.id, name, category.id, log_ch.id], 'guild', interaction.guild.id)
