@@ -23,7 +23,7 @@ class change_name(discord.ui.Modal):
         data = database.get_key('ticket', 'id', self.id)
         self.value = self.name.value
         database.update('ticket', ['name'], [self.value], 'id', self.id)
-        await interaction.response.send_message(f'チケットの名前を変更しました。', ephemeral=True)
+        await interaction.response.send_message('チケットの名前を変更しました。', ephemeral=True)
         return
 
 class close_reason(discord.ui.Modal):
