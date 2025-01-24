@@ -184,7 +184,7 @@ class ticket(commands.Cog):
                 database.delete('ticket', 'id', ticket[0])
                 await interaction.response.send_message(f'チケットを削除しました。', ephemeral=True)
                 return
-        await interaction.response.send_message(f'チケットが見つかりません。', ephemeral=True)
+        await interaction.response.send_message('チケットが見つかりません。', ephemeral=True)
     
     @tickets.command(name='list', description='チケットの一覧を表示します。')
     @app_commands.default_permissions(manage_guild=True)
