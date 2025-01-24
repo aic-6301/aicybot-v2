@@ -28,7 +28,7 @@ class admin(commands.Cog):
     
     @group.command(name="reload", description="コグを再読み込みします")
     async def reload(self, interaction: discord.Interaction, file: str):
-        if not commands.is_owner():
+        if not await self.bot.is_owner(interaction.user):
             await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
             return
         try:
@@ -68,6 +68,17 @@ class admin(commands.Cog):
             embed.color = discord.Color.red()
             await interaction.edit_original_response(embed=embed)
             return
+    
+    @group.command(name='unti', description="チケットの数∞にする")
+    async def unlimit_tickets(self, interaction: discord.Interaction, guild: int):
+        if not await self.bot.is_owner(interaction.user):
+            await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
+            return
+        guild = self.bot.get_guiod(guild)
+        if guild is None:
+            await interaction.response.send_message('サーバーが見つかりませんでした。', ephemeral=True)
+        database.update('ticket', ['unlimited'], [1], key_value=guild.id)
+        await interaction.response.send_message('チケットの数を∞にしました。', ephemeral=True)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(admin(bot))

@@ -164,14 +164,14 @@ class ticket(commands.Cog):
         data = database.get_key('ticket', 'guild', interaction.guild.id)
         if data:
             for ticket in data:
+                if len(data) >= 3 and not ticket[6]:
+                    await interaction.response.send_message('作成可能なチケットの上限に達しています。', ephemeral=True)
+                    return
                 if ticket[2] == name:
                     await interaction.response.send_message('同じ名前のチケットが既に存在します。', ephemeral=True)
                     return
-            if len(data) >= 3 and not data[6]:
-                await interaction.response.send_message('作成可能なチケットの上限に達しています。', ephemeral=True)
-                return
         id = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-        database.insert_or_update('ticket', ['id', 'guild', 'name', 'category', 'channel'], [id, interaction.guild.id, name, category.id, log_ch.id], 'guild', interaction.guild.id)
+        database.insert('ticket', ['id', 'guild', 'name', 'category', 'channel'], [id, interaction.guild.id, name, category.id, log_ch.id])
         await interaction.response.send_message('チケットを作成しました。', ephemeral=True)
     
     @tickets.command(name='delete', description='チケットを削除します。')
@@ -189,11 +189,11 @@ class ticket(commands.Cog):
     @tickets.command(name='list', description='チケットの一覧を表示します。')
     @app_commands.default_permissions(manage_guild=True)
     async def list(self, interaction: discord.Interaction):
-        data = database.get('ticket', interaction.guild.id)
+        data = database.get_key('ticket', 'guild', interaction.guild.id)
         embed = discord.Embed(title='チケット一覧')
         embeds = []
         for i, ticket in enumerate(data):
-            embed.add_field(name=ticket[2], value=f'カテゴリ: <#{ticket[3]}> ログチャンネル: <#{ticket[4]}>')
+            embed.add_field(name=f'{ticket[2]}', value=f'カテゴリ: <#{ticket[3]}> ログチャンネル: <#{ticket[4]}>')
             
             if (i+1) % 10 == 0:
                 embeds.append(embed)
