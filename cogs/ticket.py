@@ -165,7 +165,7 @@ class ticket(commands.Cog):
         if data:
             for ticket in data:
                 if ticket[2] == name:
-                    await interaction.response.send_message(f'同じ名前のチケットが既に存在します。', ephemeral=True)
+                    await interaction.response.send_message('同じ名前のチケットが既に存在します。', ephemeral=True)
                     return
             if len(data) >= 3 and not data[6]:
                 await interaction.response.send_message(f'作成可能なチケットの上限に達しています。', ephemeral=True)
