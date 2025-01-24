@@ -232,7 +232,7 @@ class ticket(commands.Cog):
             if ticket[2] == name:
                 await interaction.response.send_message('設定を変更します。', view=ticket_settings(ticket[0]), ephemeral=True)
                 return
-        await interaction.response.send_message(f'チケットが見つかりません。', ephemeral=True)
+        await interaction.response.send_message('チケットが見つかりません。', ephemeral=True)
     
     
     # チケット作成とか
