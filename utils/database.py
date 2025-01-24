@@ -7,6 +7,8 @@ setup_query = [
     'CREATE TABLE IF NOT EXISTS role_panels (id INTEGER PRIMARY KEY, name TEXT, guild INTEGER, message_id INTEGER DEFAULT 0, channel_id INTEGER DEFAULT 0)',
     'CREATE TABLE IF NOT EXISTS panel_roles (panel_id INTEGER, role_id INTEGER, FOREIGN KEY(panel_id) REFERENCES role_panels(id))',
     'CREATE TABLE IF NOT EXISTS autoreply (id TEXT(8) PRIMARY KEY, keyword TEXT, reply TEXT, user INTEGER(18), guild INTEGER)',
+    'CREATE TABLE IF NOT EXISTS ticket (id TEXT(8) NOT NULL, guild INTEGER NOT NULL, name TEXT NOT NULL, category INTEGER DEFAULT 0, channel INTEGER DEFAULT 0, roles TEXT DEFAULT 0, unlimited BOOLEAN DEFAULT 0)',
+    'CREATE TABLE IF NOT EXISTS tickets (id TEXT(8) PRIMARY KEY, ticket_id TEXT, user INTEGER, channel INTEGER, guild INTEGER, number INTEGER, messages TEXT, closed BOOLEAN, responser INTEGER DEFAULT 0, FOREIGN KEY(ticket_id) REFERENCES ticket(id))',
     'CREATE TABLE IF NOT EXISTS log (guild INTEGER PRIMARY KEY, bool BOOLEAN, channel INTEGER NOT NULL)',
 ]
 
@@ -47,6 +49,17 @@ def get_all(table):
         c = conn.cursor()
         c.execute(f'SELECT * FROM \"{table}\"')
         return c.fetchall()
+
+def insert(table, columns, values):
+    """
+    Insert a record into the specified table.
+    """
+    with connect() as conn:
+        c = conn.cursor()
+        placeholders = ', '.join(['?'] * len(values))
+        c.execute(f'INSERT INTO \"{table}\" ({", ".join(columns)}) VALUES ({placeholders})', (*values,))
+        conn.commit()
+
 
 def insert_or_update(table, columns, values, key_column='guild', key_value=None):
     """

@@ -18,7 +18,7 @@ token = os.getenv('DISCORD_TOKEN')
 class aicybot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix=commands.when_mentioned_or('a.'),
+            command_prefix=commands.when_mentioned_or(os.getenv('PREFIX') or 'a!'),
             help_command=None,
             intents=discord.Intents.all()
         )
