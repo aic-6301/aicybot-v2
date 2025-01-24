@@ -285,7 +285,7 @@ class ticket(commands.Cog):
                     await log_ch.send(embed=em)
                     await interaction.response.send_message(f'チケットを作成しました。\nチケットはこちら:<#{channel.id}>', ephemeral=True)
                     return
-            await interaction.response.send_message(f'チケットが見つかりません。', ephemeral=True)
+            await interaction.response.send_message('チケットが見つかりません。', ephemeral=True)
 
         if interaction.data.get('custom_id') and interaction.data['custom_id'] == 'close_ticket':
             await interaction.response.send_message('チケットを閉じますか？', view=close_ticket())
