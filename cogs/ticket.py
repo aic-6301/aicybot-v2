@@ -172,7 +172,7 @@ class ticket(commands.Cog):
                 return
         id = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
         database.insert_or_update('ticket', ['id', 'guild', 'name', 'category', 'channel'], [id, interaction.guild.id, name, category.id, log_ch.id], 'guild', interaction.guild.id)
-        await interaction.response.send_message(f'チケットを作成しました。', ephemeral=True)
+        await interaction.response.send_message('チケットを作成しました。', ephemeral=True)
     
     @tickets.command(name='delete', description='チケットを削除します。')
     @app_commands.describe(name='チケットの名前')
