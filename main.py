@@ -58,8 +58,19 @@ class aicybot(commands.Bot):
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")
         self.logger.info('Bot is ready!')
+        self.loop.create_task(self.change_status())
 
     
+    async def change_status(self):
+        while True:
+            await self.change_presence(activity=discord.CustomActivity(name=f'{len(self.guilds)} Guilds | {len(self.users)} Users'))
+            await asyncio.sleep(10)
+            await self.change_presence(activity=discord.CustomActivity(name=f'/help | More at /about'))
+            await asyncio.sleep(10)
+            time = datetime.datetime.now() - self.uptime
+            await self.change_presence(activity=discord.CustomActivity(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60 + '秒'  if time.days > 0 else ''}'))
+            await asyncio.sleep(10)
+
 
 if __name__ == '__main__':
     bot = aicybot()
