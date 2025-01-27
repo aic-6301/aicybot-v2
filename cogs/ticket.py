@@ -40,6 +40,7 @@ class close_reason(discord.ui.Modal):
         ch = interaction.channel
         self.value = self.reason.value
         data = database.get_key('tickets', 'channel', interaction.channel.id)
+        self.stop()
         for ticket in data:
             if ticket[3] == ch.id:
                 d = database.get_key('ticket', 'id', ticket[1])
@@ -55,7 +56,6 @@ class close_reason(discord.ui.Modal):
                 messages = [message async for message in ch.history(limit=None)]
                 database.update('tickets', ['closed', 'messages'], [True, f'{messages}'], 'channel', ch.id)
                 await interaction.channel.delete()
-                await self.stop()
                 await interaction.response.pong()
                 return
 class SelectChannels(discord.ui.ChannelSelect):
