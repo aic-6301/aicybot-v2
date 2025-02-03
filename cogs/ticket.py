@@ -45,6 +45,8 @@ class close_reason(discord.ui.Modal):
             if ticket[3] == ch.id:
                 d = database.get_key('ticket', 'id', ticket[1])
                 log_ch = interaction.guild.get_channel(d[0][4])
+                view = discord.ui.View()
+                view.add_item(discord.ui.Button(label='チケットログ', style=discord.ButtonStyle.link, url=f'https://ticket.aisii.net/', disabled=True))
                 em = discord.Embed(title='チケット', description=f'{interaction.user.mention} がチケットを閉じました。', color=discord.Color.red())
                 em.add_field(name='チケット', value=f'<#{ch.id}>')
                 em.add_field(name='チケットID', value=f'{ticket[5]}')
@@ -52,12 +54,13 @@ class close_reason(discord.ui.Modal):
                 em.add_field(name='担当者', value=f'<@{ticket[8]}>' if ticket[8] else 'なし')
                 em.add_field(name='閉じた人', value=f'{interaction.user.mention}')
                 em.add_field(name='理由', value=f'{self.value}')
-                await log_ch.send(embed=em)
+                await log_ch.send(embed=em, view=view)
                 messages = [message async for message in ch.history(limit=None)]
                 database.update('tickets', ['closed', 'messages'], [True, f'{messages}'], 'channel', ch.id)
                 await interaction.channel.delete()
                 await interaction.response.pong()
                 return
+
 class SelectChannels(discord.ui.ChannelSelect):
     def __init__(self, id, guild, type):
         super().__init__(placeholder='チャンネルを選択してください。', min_values=1, max_values=1)
@@ -136,12 +139,14 @@ class close_ticket(discord.ui.View):
             if ticket[3] == ch.id:
                 d = database.get_key('ticket', 'id', ticket[1])
                 log_ch = interaction.guild.get_channel(d[0][4])
+                view = discord.ui.View()
+                view.add_item(discord.ui.Button(label='チケットログ', style=discord.ButtonStyle.link, url=f'https://ticket.aisii.net/', disabled=True))
                 em = discord.Embed(title='チケット', description=f'{interaction.user.mention} がチケットを閉じました。', color=discord.Color.red())
                 em.add_field(name='チケット', value=f'<#{ch.id}>')
                 em.add_field(name='チケットID', value=f'{ticket[5]}')
                 em.add_field(name='作成者', value=f'<@{ticket[2]}>')
                 em.add_field(name='閉じた人', value=f'{interaction.user.mention}')
-                await log_ch.send(embed=em)
+                await log_ch.send(embed=em, view=view)
                 messages = [message async for message in ch.history(limit=None)]
                 database.update('tickets', ['closed', 'messages'], [True, f'{messages}'], 'channel', ch.id)
                 await interaction.channel.delete()
