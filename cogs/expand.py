@@ -20,7 +20,7 @@ class expand(commands.Cog):
         if message.author.bot:
             return
         expand_setting = database.get_key('settings', 'guild', message.guild.id, 'expand')
-        if expand_setting is not None and expand_setting[0][1]:
+        if expand_setting and expand_setting[0][0]:
             await _expand(message)
     
     @commands.Cog.listener()
