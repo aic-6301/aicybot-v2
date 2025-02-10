@@ -19,7 +19,7 @@ class expand(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
-        expand_setting = database.get('expand', message.guild.id)
+        expand_setting = database.get_key('settings', 'guild', message.guild.id, 'expand')
         if expand_setting is not None and expand_setting[1]:
             await _expand(message)
     
