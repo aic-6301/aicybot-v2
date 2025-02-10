@@ -21,7 +21,11 @@ class settings(commands.Cog):
     ])
     @app_commands.default_permissions(manage_guild=True)
     async def expand(self, interaction: discord.Interaction, mode: int):
-        database.update('settings', ['expand'], [mode], key_value=interaction.guild.id)
+        print(mode)
+        if database.get('settings', interaction.guild.id) is None:
+            database.insert('settings', ['guild', 'expand'], [interaction.guild.id, mode])
+        else:
+            database.update('settings', ['expand'], [mode], key_value=interaction.guild.id)
         await interaction.response.send_message(f'メッセージの展開を{"有効" if mode else "無効"}にしました。', ephemeral=True)
     
     @settings.command(name='log', description='ログを設定します。')
@@ -37,7 +41,10 @@ class settings(commands.Cog):
             return
         
         try:
-            database.update('settings', ['log_ch'], [channel.id], key_value=interaction.guild.id)
+            if database.get('settings', interaction.guild.id) is None:
+                database.insert('settings', ['guild', 'log_ch'], [interaction.guild.id, channel.id])
+            else:
+                database.update('settings', ['log_ch'], [channel.id], key_value=interaction.guild.id)
             await interaction.response.send_message(f'ログを{f"有効にし、{channel.mention}にログチャンネルを設定" if mode else "無効に"}しました。\n-# ※適用まで時間がかかる可能性があります。', ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f'エラーが発生しました: `{e}`', ephemeral=True)
