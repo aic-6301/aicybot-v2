@@ -184,10 +184,13 @@ class RolePanel(commands.Cog):
                 if not is_valid:
                     continue
                 if channel:
-                    message = await channel.fetch_message(panel[3])
-                    view = RoleDropdownView(roles)
-                    embed = discord.Embed(title=panel[1], description='ロールを選択してください', color=discord.Color.blurple())
-                    await message.edit(embed=embed, view=view)
+                    try:
+                        message = await channel.fetch_message(panel[3])
+                        view = RoleDropdownView(roles)
+                        embed = discord.Embed(title=panel[1], description='ロールを選択してください', color=discord.Color.blurple())
+                        await message.edit(embed=embed, view=view)
+                    except:
+                        continue
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(RolePanel(bot))
