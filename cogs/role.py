@@ -132,9 +132,12 @@ class RolePanel(commands.Cog):
             await interaction.response.send_message('ロールが見つかりませんでした。\nロールを設定してからもう一度お試しください。', ephemeral=True)
             return
         if panel[3]:
-            old_ch = interaction.guild.get_channel(panel[4])
-            old_msg = await old_ch.fetch_message(panel[3])
-            await old_msg.delete()
+            try:
+                old_ch = interaction.guild.get_channel(panel[4])
+                old_msg = await old_ch.fetch_message(panel[3])
+                await old_msg.delete()
+            except:
+                pass
         view = RoleDropdownView(roles)
         embed = discord.Embed(title=panel[1], description='ロールを選択してください', color=discord.Color.blurple())
         message = await channel.send(embed=embed, view=view)
