@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from logging import getLogger, basicConfig, DEBUG
 from dotenv import load_dotenv
@@ -27,6 +27,7 @@ class aicybot(commands.Bot):
         coloredlogs.install(level=DEBUG, logger=self.logger)
         self.logger.setLevel(DEBUG)
         self.uptime = datetime.datetime.now()
+        self.status = 0
 
     async def on_ready(self):
         await self.change_presence(status=discord.Status.dnd)
@@ -61,15 +62,16 @@ class aicybot(commands.Bot):
         self.loop.create_task(self.change_status())
 
     
+    
+    @tasks.loop(seconds=10)
     async def change_status(self):
-        while True:
+        if self.status == 0:
             await self.change_presence(activity=discord.CustomActivity(name=f'{len(self.guilds)} Guilds | {len(self.users)} Users'))
-            await asyncio.sleep(10)
+        elif self.status == 1:
             await self.change_presence(activity=discord.CustomActivity(name=f'/help | More at /about'))
-            await asyncio.sleep(10)
+        elif self.status == 2:
             time = datetime.datetime.now() - self.uptime
             await self.change_presence(activity=discord.CustomActivity(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60 + '秒'  if time.days > 0 else ''}'))
-            await asyncio.sleep(10)
 
 
 if __name__ == '__main__':
