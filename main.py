@@ -27,7 +27,6 @@ class aicybot(commands.Bot):
         coloredlogs.install(level=DEBUG, logger=self.logger)
         self.logger.setLevel(DEBUG)
         self.uptime = datetime.datetime.now()
-        self.status = 0
 
     async def on_ready(self):
         await self.change_presence(status=discord.Status.dnd)
@@ -59,20 +58,6 @@ class aicybot(commands.Bot):
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")
         self.logger.info('Bot is ready!')
-        self.loop.create_task(self.change_status())
-
-    
-    
-    @tasks.loop(seconds=10)
-    async def change_status(self):
-        if self.status == 0:
-            await self.change_presence(activity=discord.CustomActivity(name=f'{len(self.guilds)} Guilds | {len(self.users)} Users'))
-        elif self.status == 1:
-            await self.change_presence(activity=discord.CustomActivity(name=f'/help | More at /about'))
-        elif self.status == 2:
-            time = datetime.datetime.now() - self.uptime
-            await self.change_presence(activity=discord.CustomActivity(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60 + '秒'  if time.days > 0 else ''}'))
-
 
 if __name__ == '__main__':
     bot = aicybot()
