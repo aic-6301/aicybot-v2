@@ -210,12 +210,12 @@ class cog(commands.Cog):
     @tasks.loop(seconds=10)
     async def change_status(self):
         if self.rpc == 0:
-            await self.change_presence(activity=discord.CustomActivity(name=f'{len(self.guilds)} Guilds | {len(self.users)} Users'))
+            await self.bot.change_presence(activity=discord.CustomActivity(name=f'{len(self.guilds)} Guilds | {len(self.users)} Users'))
         elif self.rpc == 1:
-            await self.change_presence(activity=discord.CustomActivity(name=f'/help | More at /about'))
+            await self.bot.change_presence(activity=discord.CustomActivity(name=f'/help | More at /about'))
         elif self.rpc == 2:
             time = datetime.datetime.now() - self.bot.uptime
-            await self.change_presence(activity=discord.CustomActivity(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60 + '秒'  if time.days > 0 else ''}'))
+            await self.bot.change_presence(activity=discord.CustomActivity(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60 + '秒'  if time.days > 0 else ''}'))
 
 
 async def setup(bot: commands.Bot) -> None:

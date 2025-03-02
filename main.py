@@ -58,6 +58,7 @@ class aicybot(commands.Bot):
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")
         self.logger.info('Bot is ready!')
+        await self.change_presence(status=discord.Status.online)
 
 if __name__ == '__main__':
     bot = aicybot()
