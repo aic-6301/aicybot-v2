@@ -211,12 +211,14 @@ class cog(commands.Cog):
     async def change_status(self):
         if self.rpc == 0:
             await self.bot.change_presence(activity=discord.CustomActivity(name=f'{len(self.bot.guilds)} Guilds | {len(self.bot.users)} Users'))
+            self.rpc = 1
         elif self.rpc == 1:
             await self.bot.change_presence(activity=discord.CustomActivity(name=f'/help | More at /about'))
+            self.rpc = 2
         elif self.rpc == 2:
             time = datetime.datetime.now() - self.bot.uptime
             await self.bot.change_presence(activity=discord.CustomActivity(name=f'起動時間: {time.days + '日' if time.days > 0 else ''} {time.seconds // 3600}時間{time.seconds // 60 % 60}分{time.seconds % 60 + '秒'  if time.days > 0 else ''}'))
-
+            self.rpc = 0
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(cog(bot))
