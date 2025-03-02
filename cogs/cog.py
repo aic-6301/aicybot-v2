@@ -210,7 +210,7 @@ class cog(commands.Cog):
     @tasks.loop(seconds=10)
     async def change_status(self):
         if self.rpc == 0:
-            await self.bot.change_presence(activity=discord.CustomActivity(name=f'{len(self.guilds)} Guilds | {len(self.users)} Users'))
+            await self.bot.change_presence(activity=discord.CustomActivity(name=f'{len(self.bot.guilds)} Guilds | {len(self.bot.users)} Users'))
         elif self.rpc == 1:
             await self.bot.change_presence(activity=discord.CustomActivity(name=f'/help | More at /about'))
         elif self.rpc == 2:
