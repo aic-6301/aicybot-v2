@@ -72,7 +72,7 @@ class admin(commands.Cog):
             return
     
     @group.command(name='unti', description="チケットの数∞にする")
-    async def unlimit_tickets(self, interaction: discord.Interaction, guild: int):
+    async def unlimit_tickets(self, interaction: discord.Interaction, guild: str):
         if not await self.bot.is_owner(interaction.user):
             await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
             return
@@ -105,7 +105,7 @@ class admin(commands.Cog):
             await Paginator.Simple().start(interaction, embeds)
     
     @group.command(name='leave', description="Botをサーバーから退出させます")
-    async def leave(self, interaction: discord.Interaction, guild: int):
+    async def leave(self, interaction: discord.Interaction, guild: str):
         if not await self.bot.is_owner(interaction.user):
             await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
             return
@@ -117,7 +117,7 @@ class admin(commands.Cog):
         await interaction.response.send_message(f'{guild.name}から退出しました。', ephemeral=True)
     
     @group.command(name='anko', description="餡子食べれる")
-    async def unlimit_announce(self, interaction: discord.Interaction, guild: int):
+    async def unlimit_announce(self, interaction: discord.Interaction, guild: str):
         if not await self.bot.is_owner(interaction.user):
             await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
             return
