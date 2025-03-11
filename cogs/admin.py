@@ -76,7 +76,7 @@ class admin(commands.Cog):
         if not await self.bot.is_owner(interaction.user):
             await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
             return
-        guild = self.bot.get_guild(guild)
+        guild = self.bot.get_guild(int(guild))
         if guild is None:
             await interaction.response.send_message('サーバーが見つかりませんでした。', ephemeral=True)
         database.update('ticket', ['unlimited'], [1], key_value=guild.id)
@@ -109,7 +109,7 @@ class admin(commands.Cog):
         if not await self.bot.is_owner(interaction.user):
             await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
             return
-        guild = self.bot.get_guild(guild)
+        guild = self.bot.get_guild(int(guild))
         if guild is None:
             await interaction.response.send_message('サーバーが見つかりませんでした。', ephemeral=True)
             return
@@ -121,7 +121,7 @@ class admin(commands.Cog):
         if not await self.bot.is_owner(interaction.user):
             await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
             return
-        guild = self.bot.get_guild(guild)
+        guild = self.bot.get_guild(int(guild))
         if guild is None:
             await interaction.response.send_message('サーバーが見つかりませんでした。', ephemeral=True)
         database.update('autopublish', ['unlimited'], [1], key_value=guild.id)
