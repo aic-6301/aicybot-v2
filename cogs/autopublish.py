@@ -35,10 +35,11 @@ class autopublish(commands.Cog):
             data = eval(data[0][1])  # Convert text back to dict
             data.append(channel.id)
             channels = str(data)  # Convert dict back to text
+            database.update('autopublish', ['channel'], [channels], key_value=interaction.guild.id)
         else:
             channels = str([channel.id])
         
-        database.insert('autopublish', ['channel', 'guild'], [channels, interaction.guild.id])
+            database.insert('autopublish', ['channel', 'guild'], [channels, interaction.guild.id])
         await interaction.response.send_message(f'{channel.mention}を自動公開対象に追加しました。', ephemeral=True)
         return
 
