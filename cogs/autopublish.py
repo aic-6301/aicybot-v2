@@ -76,10 +76,15 @@ class autopublish(commands.Cog):
             return
         
         data = eval(data[0][1])  # Convert text back to dict
+        valid_channels = []
         for channel in data:
-            if not interaction.guild.get_channel(channel):
+            ch = interaction.guild.get_channel(channel)
+            if ch:
+                valid_channels.append(ch)
+            else:
                 data.remove(channel)
-        channels = [interaction.guild.get_channel(channel).mention for channel in data]
+        database.update('autopublish', ['channel'], [str(data)], key_value=interaction.guild.id)
+        channels = [ch.mention for ch in valid_channels]
         if not channels:
             await interaction.response.send_message('設定されているチャンネルがありません。', ephemeral=True)
             return
