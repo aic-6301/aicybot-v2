@@ -76,7 +76,13 @@ class autopublish(commands.Cog):
             return
         
         data = eval(data[0][1])  # Convert text back to dict
+        for channel in data:
+            if not interaction.guild.get_channel(channel):
+                data.remove(channel)
         channels = [interaction.guild.get_channel(channel).mention for channel in data]
+        if not channels:
+            await interaction.response.send_message('設定されているチャンネルがありません。', ephemeral=True)
+            return
         await interaction.response.send_message(f'自動公開対象のチャンネルは以下の通りです。\n{", ".join(channels)}', ephemeral=True)
         return
 
