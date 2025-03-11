@@ -115,6 +115,17 @@ class admin(commands.Cog):
             return
         await guild.leave()
         await interaction.response.send_message(f'{guild.name}から退出しました。', ephemeral=True)
+    
+    @group.command(name='anko', description="餡子食べれる")
+    async def unlimit_announce(self, interaction: discord.Interaction, guild: int):
+        if not await self.bot.is_owner(interaction.user):
+            await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
+            return
+        guild = self.bot.get_guild(guild)
+        if guild is None:
+            await interaction.response.send_message('サーバーが見つかりませんでした。', ephemeral=True)
+        database.update('autopublish', ['unlimited'], [1], key_value=guild.id)
+        await interaction.response.send_message('アナウンスチャンネルの設定可能チャンネルを無制限に設定しました。', ephemeral=True)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(admin(bot))
