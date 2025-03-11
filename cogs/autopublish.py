@@ -19,7 +19,7 @@ class autopublish(commands.Cog):
     @app_commands.default_permissions(manage_guild=True)
     async def add(self, interaction: discord.Interaction, channel: discord.TextChannel):
         data = database.get_key('autopublish', 'guild', interaction.guild.id)
-        if data and len(data) >= 5:
+        if data and len(data[0]) >= 5 and not data[0][2]:
             await interaction.response.send_message('自動公開設定可能なチャンネル数は最大5個までです。', ephemeral=True)
             return
         
