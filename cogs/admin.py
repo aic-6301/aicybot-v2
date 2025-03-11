@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
+import Paginator
+
 import subprocess
 import sys
 
@@ -74,11 +76,45 @@ class admin(commands.Cog):
         if not await self.bot.is_owner(interaction.user):
             await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
             return
-        guild = self.bot.get_guiod(guild)
+        guild = self.bot.get_guild(guild)
         if guild is None:
             await interaction.response.send_message('サーバーが見つかりませんでした。', ephemeral=True)
         database.update('ticket', ['unlimited'], [1], key_value=guild.id)
         await interaction.response.send_message('チケットの数を∞にしました。', ephemeral=True)
+        
+    @group.command(name='guilds', description="Botが参加しているサーバーの一覧を表示します")
+    async def guilds(self, interaction: discord.Interaction):
+        if not await self.bot.is_owner(interaction.user):
+            await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
+            return
+        embeds = []
+        embed = discord.Embed(title="Botが参加しているサーバー", color=discord.Color.blurple())
+        for i, guild in enumerate(self.bot.guilds):
+            embed.add_field(name=guild.name, value=f"ID: {guild.id}\nメンバー数: {guild.member_count}\n オーナー: {guild.owner.mention}", inline=False)
+            
+            if (i+1) % 5 == 0:
+                embeds.append(embed)
+                embed = discord.Embed(title="Botが参加しているサーバー", color=discord.Color.blurple())
+        
+        if len(embed.fields) > 0:
+            embeds.append(embed)
+            
+        if len(embeds) == 1:
+            await interaction.response.send_message(embed=embeds[0])
+        else:
+            await Paginator.Simple().start(interaction, embeds)
+    
+    @group.command(name='leave', description="Botをサーバーから退出させます")
+    async def leave(self, interaction: discord.Interaction, guild: int):
+        if not await self.bot.is_owner(interaction.user):
+            await interaction.response.send_message('このコマンドはBot管理者のみ実行できます。', ephemeral=True)
+            return
+        guild = self.bot.get_guild(guild)
+        if guild is None:
+            await interaction.response.send_message('サーバーが見つかりませんでした。', ephemeral=True)
+            return
+        await guild.leave()
+        await interaction.response.send_message(f'{guild.name}から退出しました。', ephemeral=True)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(admin(bot))

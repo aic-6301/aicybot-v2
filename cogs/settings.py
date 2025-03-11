@@ -48,7 +48,8 @@ class settings(commands.Cog):
             await interaction.response.send_message(f'ログを{f"有効にし、{channel.mention}にログチャンネルを設定" if mode else "無効に"}しました。\n-# ※適用まで時間がかかる可能性があります。', ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f'エラーが発生しました: `{e}`', ephemeral=True)
-    
+            
+
     
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(settings(bot))
