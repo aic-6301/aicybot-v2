@@ -24,7 +24,6 @@ class spotify(commands.Cog):
             m = interaction.guild.get_member(member.id)
         if m.activities:
             for activity in m.activities:
-                print(activity)
                 if isinstance(activity, discord.Spotify):
                     embed = discord.Embed(title=f"{f'{m.display_name}が' if not member else ''}Spotifyで再生中",
                                           color=discord.Colour(0x1DB954))
@@ -38,7 +37,6 @@ class spotify(commands.Cog):
                     await interaction.response.send_message(embed = embed, view = view, ephemeral = True if not member else False)
                     return
                 elif activity.type == discord.ActivityType.listening:
-                    print(activity.name)
                     if activity.name == 'YouTube Music':
                         if activity.small_image_text != "Playing":
                             await interaction.response.send_message(f"何もしていないようです。", ephemeral = True)
