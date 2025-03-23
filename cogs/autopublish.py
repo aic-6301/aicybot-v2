@@ -12,49 +12,49 @@ class autopublish(commands.Cog):
 
 
         
-    autopublish = app_commands.Group(name='publish', description='自動公開に関するコマンドです')
+    autopublish = app_commands.Group(name = 'publish', description = '自動公開に関するコマンドです')
     
-    @autopublish.command(name='add', description='自動公開するチャンネルを追加します。')
-    @app_commands.describe(channel='自動公開するチャンネルを指定します。')
-    @app_commands.default_permissions(manage_guild=True)
+    @autopublish.command(name = 'add', description = '自動公開するチャンネルを追加します。')
+    @app_commands.describe(channel = '自動公開するチャンネルを指定します。')
+    @app_commands.default_permissions(manage_guild = True)
     async def add(self, interaction: discord.Interaction, channel: discord.TextChannel):
         data = database.get_key('autopublish', 'guild', interaction.guild.id)
-        if data and len(data[0]) >= 5 and not data[0][2]:
-            await interaction.response.send_message('自動公開設定可能なチャンネル数は最大5個までです。', ephemeral=True)
+        if data and len(data[0]) >=  5 and not data[0][2]:
+            await interaction.response.send_message('自動公開設定可能なチャンネル数は最大5個までです。', ephemeral = True)
             return
         
         if database.get_key('autopublish', 'channel', channel.id):
-            await interaction.response.send_message('指定したチャンネルは既に設定されています。', ephemeral=True)
+            await interaction.response.send_message('指定したチャンネルは既に設定されています。', ephemeral = True)
             return
         
-        if channel.type != discord.ChannelType.news:
-            await interaction.response.send_message('このチャンネルはアナウンスチャンネルではありません。', ephemeral=True)
+        if channel.type !=  discord.ChannelType.news:
+            await interaction.response.send_message('このチャンネルはアナウンスチャンネルではありません。', ephemeral = True)
             return
         
         if data:
             data = eval(data[0][1])  # Convert text back to dict
             data.append(channel.id)
             channels = str(data)  # Convert dict back to text
-            database.update('autopublish', ['channel'], [channels], key_value=interaction.guild.id)
+            database.update('autopublish', ['channel'], [channels], key_value = interaction.guild.id)
         else:
             channels = str([channel.id])
         
             database.insert('autopublish', ['channel', 'guild'], [channels, interaction.guild.id])
-        await interaction.response.send_message(f'{channel.mention}を自動公開対象に追加しました。', ephemeral=True)
+        await interaction.response.send_message(f'{channel.mention}を自動公開対象に追加しました。', ephemeral = True)
         return
 
-    @autopublish.command(name='remove', description='自動公開するチャンネルを削除します。')
-    @app_commands.describe(channel='自動公開するチャンネルを指定します。')
-    @app_commands.default_permissions(manage_guild=True)
+    @autopublish.command(name = 'remove', description = '自動公開するチャンネルを削除します。')
+    @app_commands.describe(channel = '自動公開するチャンネルを指定します。')
+    @app_commands.default_permissions(manage_guild = True)
     async def remove(self, interaction: discord.Interaction, channel: discord.TextChannel):
         data = database.get_key('autopublish', 'guild', interaction.guild.id)
         if not data:
-            await interaction.response.send_message('設定されているチャンネルがありません。', ephemeral=True)
+            await interaction.response.send_message('設定されているチャンネルがありません。', ephemeral = True)
             return
         
         data = eval(data[0][1])  # Convert text back to dict
         if channel.id not in data:
-            await interaction.response.send_message('指定したチャンネルは設定されていません。', ephemeral=True)
+            await interaction.response.send_message('指定したチャンネルは設定されていません。', ephemeral = True)
             return
         
         data.remove(channel.id)
@@ -63,16 +63,16 @@ class autopublish(commands.Cog):
         else:
             channels = '0'
         
-        database.update('autopublish', ['channel'], [channels], key_value=interaction.guild.id)
-        await interaction.response.send_message(f'{channel.mention}を自動公開対象から削除しました。', ephemeral=True)
+        database.update('autopublish', ['channel'], [channels], key_value = interaction.guild.id)
+        await interaction.response.send_message(f'{channel.mention}を自動公開対象から削除しました。', ephemeral = True)
         return
 
-    @autopublish.command(name='list', description='自動公開するチャンネルを表示します。')
-    @app_commands.default_permissions(manage_guild=True)
+    @autopublish.command(name = 'list', description = '自動公開するチャンネルを表示します。')
+    @app_commands.default_permissions(manage_guild = True)
     async def list(self, interaction: discord.Interaction):
         data = database.get_key('autopublish', 'guild', interaction.guild.id)
         if not data:
-            await interaction.response.send_message('設定されているチャンネルがありません。', ephemeral=True)
+            await interaction.response.send_message('設定されているチャンネルがありません。', ephemeral = True)
             return
         
         data = eval(data[0][1])  # Convert text back to dict
@@ -83,12 +83,12 @@ class autopublish(commands.Cog):
                 valid_channels.append(ch)
             else:
                 data.remove(channel)
-        database.update('autopublish', ['channel'], [str(data)], key_value=interaction.guild.id)
+        database.update('autopublish', ['channel'], [str(data)], key_value = interaction.guild.id)
         channels = [ch.mention for ch in valid_channels]
         if not channels:
-            await interaction.response.send_message('設定されているチャンネルがありません。', ephemeral=True)
+            await interaction.response.send_message('設定されているチャンネルがありません。', ephemeral = True)
             return
-        await interaction.response.send_message(f'自動公開対象のチャンネルは以下の通りです。\n{", ".join(channels)}', ephemeral=True)
+        await interaction.response.send_message(f'自動公開対象のチャンネルは以下の通りです。\n{", ".join(channels)}', ephemeral = True)
         return
 
     @commands.Cog.listener()

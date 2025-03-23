@@ -33,15 +33,15 @@ async def _expand(message: discord.Message):
     messages = await get_message(message)
     for m in messages:
         embeds = []
-        embed = discord.Embed(color=discord.Color.brand_green())
+        embed = discord.Embed(color = discord.Color.brand_green())
         embeds.append(embed)
         
-        embeds[0].set_author(name=m.author.display_name, icon_url=m.author.avatar.url)
+        embeds[0].set_author(name = m.author.display_name, icon_url = m.author.avatar.url)
         
         if m.content or m.attachments:
             if m.attachments:
                 for at in m.attachments[:1]:
-                    embeds[0].set_image(url=at.url)
+                    embeds[0].set_image(url = at.url)
             if m.content:
                 embeds[0].description = m.content
         
@@ -49,15 +49,15 @@ async def _expand(message: discord.Message):
             for em in m.embeds[:2]:
                 embeds.append(em)
         view = discord.ui.View()
-        view.add_item(discord.ui.Button(style=discord.ButtonStyle.link, label='メッセージに飛ぶ', url=m.jump_url, emoji='🔗'))
-        view.add_item(discord.ui.Button(style=discord.ButtonStyle.danger, label='削除', custom_id='delete-expand', emoji='🗑️'))
+        view.add_item(discord.ui.Button(style = discord.ButtonStyle.link, label = 'メッセージに飛ぶ', url = m.jump_url, emoji = '🔗'))
+        view.add_item(discord.ui.Button(style = discord.ButtonStyle.danger, label = '削除', custom_id = 'delete-expand', emoji = '🗑️'))
 
-        await message.reply(embeds=embeds, mention_author=False, view=view)
+        await message.reply(embeds = embeds, mention_author = False, view = view)
 
 
 async def deexpand(interaction: discord.Interaction):
     await interaction.message.delete()
-    await interaction.response.send_message("削除しました。", ephemeral=True)
+    await interaction.response.send_message("削除しました。", ephemeral = True)
 
     
 async def get_message(message):

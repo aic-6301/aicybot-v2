@@ -18,18 +18,18 @@ token = os.getenv('DISCORD_TOKEN')
 class aicybot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix=commands.when_mentioned_or(os.getenv('PREFIX') or 'a!'),
-            help_command=None,
-            intents=discord.Intents.all()
+            command_prefix = os.getenv('PREFIX') or 'a!',
+            help_command = None,
+            intents = discord.Intents.all()
         )
-        basicConfig(level=DEBUG)  # ログの基本設定を追加
+        basicConfig(level = DEBUG)  # ログの基本設定を追加
         self.logger = getLogger('AicyBot')
-        coloredlogs.install(level=DEBUG, logger=self.logger)
+        coloredlogs.install(level = DEBUG, logger = self.logger)
         self.logger.setLevel(DEBUG)
         self.uptime = datetime.datetime.now()
 
     async def on_ready(self):
-        await self.change_presence(status=discord.Status.dnd)
+        await self.change_presence(status = discord.Status.dnd)
         if sys.version_info < (3, 12):
             self.logger.critical('Python 3.12以上が必要です。')
             sys.exit()
@@ -58,7 +58,7 @@ class aicybot(commands.Bot):
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")
         self.logger.info('Bot is ready!')
-        await self.change_presence(status=discord.Status.online)
+        await self.change_presence(status = discord.Status.online)
 
 if __name__ == '__main__':
     bot = aicybot()

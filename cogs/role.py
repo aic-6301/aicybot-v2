@@ -10,7 +10,7 @@ class RoleDropdown(discord.ui.Select):
             for role in roles
         ]
         maxv = len(options)
-        super().__init__(placeholder='ロールを選択してください...', min_values=1, max_values=maxv, options=options)
+        super().__init__(placeholder = 'ロールを選択してください...', min_values = 1, max_values = maxv, options = options)
         self.roles = roles
 
     async def callback(self, interaction: discord.Interaction):
@@ -28,12 +28,12 @@ class RoleDropdown(discord.ui.Select):
                         await interaction.user.add_roles(role)
                         added_roles.append(role)
                 else:
-                    embed = discord.Embed(title='エラー', description='ロールが見つかりませんでした。', color=discord.Color.red())
+                    embed = discord.Embed(title = 'エラー', description = 'ロールが見つかりませんでした。', color = discord.Color.red())
                     embed.set_footer(text='ロールが削除されている可能性があります。')
-                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                    await interaction.response.send_message(embed = embed, ephemeral = True)
                     view = RoleDropdownView(self.roles)
                     embed = interaction.message.embeds[0]
-                    await interaction.message.edit(embed=embed, view=view)
+                    await interaction.message.edit(embed = embed, view = view)
                     return
 
             if added_roles or removed_roles:
@@ -42,16 +42,16 @@ class RoleDropdown(discord.ui.Select):
                     description += '追加されたロール: ' + ', '.join([role.mention for role in added_roles]) + '\n'
                 if removed_roles:
                     description += '削除されたロール: ' + ', '.join([role.mention for role in removed_roles])
-                embed = discord.Embed(title='ロール更新', description=description, color=discord.Color.blurple())
-                await interaction.response.send_message(embed=embed, ephemeral=True)
+                embed = discord.Embed(title = 'ロール更新', description = description, color = discord.Color.blurple())
+                await interaction.response.send_message(embed = embed, ephemeral = True)
         except discord.errors.Forbidden:
-            embed = discord.Embed(title='エラー', description=f'{role.mention}ロールの付与に失敗しました。\n内容：`Botの権限が不足しています。`', color=discord.Color.red())
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            embed = discord.Embed(title = 'エラー', description = f'{role.mention}ロールの付与に失敗しました。\n内容：`Botの権限が不足しています。`', color = discord.Color.red())
+            await interaction.response.send_message(embed = embed, ephemeral = True)
 
         # Automatically clear the selection
         view = RoleDropdownView(self.roles)
         embed = interaction.message.embeds[0]
-        await interaction.message.edit(embed=embed, view=view)
+        await interaction.message.edit(embed = embed, view = view)
         return
 
 class RoleDropdownView(discord.ui.View):
@@ -66,20 +66,20 @@ class RolePanel(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    group = app_commands.Group(name='rolepanel', description='ロールパネルに関するコマンドです')
+    group = app_commands.Group(name = 'rolepanel', description = 'ロールパネルに関するコマンドです')
 
 
-    @group.command(name="create", description="ロールパネルを作成します")
-    @app_commands.describe(name='ロールパネルの名前')
+    @group.command(name = "create", description = "ロールパネルを作成します")
+    @app_commands.describe(name = 'ロールパネルの名前')
     async def create_panel(self, interaction: discord.Interaction, name: str):
         if database.get_key('role_panels', 'guild', interaction.guild.id, 'name') == name:
-            await interaction.response.send_message('その名前のロールパネルは既に存在します。', ephemeral=True)
+            await interaction.response.send_message('その名前のロールパネルは既に存在します。', ephemeral = True)
             return
         database.insert_or_update('role_panels', ['name', 'guild'], [name, interaction.guild.id])
-        await interaction.response.send_message(f'{name}ロールパネルが作成されました。', ephemeral=True)
+        await interaction.response.send_message(f'{name}ロールパネルが作成されました。', ephemeral = True)
     
-    @group.command(name="addrole", description="ロールパネルにロールを追加します")
-    @app_commands.describe(name='ロールパネルの名前', role='追加するロール')
+    @group.command(name = "addrole", description = "ロールパネルにロールを追加します")
+    @app_commands.describe(name = 'ロールパネルの名前', role='追加するロール')
     async def add_role(self, interaction: discord.Interaction, name: str, role: discord.Role):
         panel = database.get_key('role_panels', 'guild', interaction.guild.id)
         for p in panel:
@@ -88,21 +88,21 @@ class RolePanel(commands.Cog):
                 break
         if panel:
             if role.position >= interaction.guild.me.top_role.position:
-                embed = discord.Embed(title='エラー', description='Botより上のロールを追加することはできません。', color=discord.Color.red())
-                await interaction.response.send_message(embed=embed, ephemeral=True)
+                embed = discord.Embed(title = 'エラー', description = 'Botより上のロールを追加することはできません。', color = discord.Color.red())
+                await interaction.response.send_message(embed = embed, ephemeral = True)
                 return
             database.insert_or_update('panel_roles', ['panel_id', 'role_id'], [panel[0], role.id])
-            await interaction.response.send_message(f'{role.mention} ロールがパネルに追加されました。', ephemeral=True)
+            await interaction.response.send_message(f'{role.mention} ロールがパネルに追加されました。', ephemeral = True)
 
-    @group.command(name="removerole", description="ロールパネルからロールを削除します")
-    @app_commands.describe(name='ロールパネルの名前', role='削除するロール')
+    @group.command(name = "removerole", description = "ロールパネルからロールを削除します")
+    @app_commands.describe(name = 'ロールパネルの名前', role='削除するロール')
     async def remove_role(self, interaction: discord.Interaction, name: str, role: discord.Role):
         database.delete('panel_roles', 'role_id', role.id)
-        embed = discord.Embed(title='削除', description=f'{role.mention} ロールがパネルから削除されました。', color=discord.Color.blurple())
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        embed = discord.Embed(title = '削除', description = f'{role.mention} ロールがパネルから削除されました。', color = discord.Color.blurple())
+        await interaction.response.send_message(embed = embed, ephemeral = True)
     
-    @group.command(name="delete", description="ロールパネルを削除します")
-    @app_commands.describe(name='ロールパネルの名前')
+    @group.command(name = "delete", description = "ロールパネルを削除します")
+    @app_commands.describe(name = 'ロールパネルの名前')
     async def delete_panel(self, interaction: discord.Interaction, name: str):
         panel = database.get_key('role_panels', 'guild', interaction.guild.id)
         for p in panel:
@@ -110,10 +110,10 @@ class RolePanel(commands.Cog):
                 panel = p
                 break
         database.delete('role_panels', 'id', panel[0])
-        await interaction.response.send_message(f'{name}ロールパネルが削除されました。', ephemeral=True)
+        await interaction.response.send_message(f'{name}ロールパネルが削除されました。', ephemeral = True)
     
-    @group.command(name='send', description='ロールパネルを送信します')
-    @app_commands.describe(name='ロールパネルの名前', channel='送信するチャンネル')
+    @group.command(name = 'send', description = 'ロールパネルを送信します')
+    @app_commands.describe(name = 'ロールパネルの名前', channel = '送信するチャンネル')
     async def send_panel(self, interaction: discord.Interaction, name: str, channel: discord.TextChannel):
         panel = database.get_key('role_panels', 'guild', interaction.guild.id)
         for p in panel:
@@ -121,15 +121,15 @@ class RolePanel(commands.Cog):
                 panel = p
                 break
         if not panel:
-            await interaction.response.send_message('ロールパネルが見つかりませんでした。\nパネルを作成してからもう一度お試しください。', ephemeral=True)
+            await interaction.response.send_message('ロールパネルが見つかりませんでした。\nパネルを作成してからもう一度お試しください。', ephemeral = True)
             return
         role_ids = database.get_key('panel_roles', 'panel_id', panel[0], 'role_id')
         if role_ids == []:
-            await interaction.response.send_message('ロールが見つかりませんでした。\nロールを設定してからもう一度お試しください。', ephemeral=True)
+            await interaction.response.send_message('ロールが見つかりませんでした。\nロールを設定してからもう一度お試しください。', ephemeral = True)
             return
         roles = [interaction.guild.get_role(role_id[0]) for role_id in role_ids]
         if roles is None:
-            await interaction.response.send_message('ロールが見つかりませんでした。\nロールを設定してからもう一度お試しください。', ephemeral=True)
+            await interaction.response.send_message('ロールが見つかりませんでした。\nロールを設定してからもう一度お試しください。', ephemeral = True)
             return
         if panel[3]:
             try:
@@ -139,10 +139,10 @@ class RolePanel(commands.Cog):
             except:
                 pass
         view = RoleDropdownView(roles)
-        embed = discord.Embed(title=panel[1], description='ロールを選択してください', color=discord.Color.blurple())
-        message = await channel.send(embed=embed, view=view)
-        database.insert_or_update('role_panels', ['message_id', 'channel_id'], [message.id, message.channel.id], key_column='id', key_value=p[0])
-        await interaction.response.send_message(f'{name}ロールパネルが送信されました。', ephemeral=True)
+        embed = discord.Embed(title = panel[1], description = 'ロールを選択してください', color = discord.Color.blurple())
+        message = await channel.send(embed = embed, view = view)
+        database.insert_or_update('role_panels', ['message_id', 'channel_id'], [message.id, message.channel.id], key_column = 'id', key_value = p[0])
+        await interaction.response.send_message(f'{name}ロールパネルが送信されました。', ephemeral = True)
     
     
     
@@ -153,7 +153,7 @@ class RolePanel(commands.Cog):
         panels = database.get_key('role_panels', 'guild', interaction.guild.id, 'name')
         options = []
         for panel in panels:
-            options.append(app_commands.Choice(name=panel[0], value=panel[0]))
+            options.append(app_commands.Choice(name = panel[0], value = panel[0]))
         return options
 
 
@@ -190,8 +190,8 @@ class RolePanel(commands.Cog):
                     try:
                         message = await channel.fetch_message(panel[3])
                         view = RoleDropdownView(roles)
-                        embed = discord.Embed(title=panel[1], description='ロールを選択してください', color=discord.Color.blurple())
-                        await message.edit(embed=embed, view=view)
+                        embed = discord.Embed(title = panel[1], description = 'ロールを選択してください', color = discord.Color.blurple())
+                        await message.edit(embed = embed, view = view)
                     except:
                         continue
 
