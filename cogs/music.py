@@ -52,7 +52,7 @@ class spotify(commands.Cog):
                         await interaction.response.send_message(embed = embed, ephemeral = True if not member else False)
                         return
                     elif activity.name == 'Spotify':
-                        embed = discord.Embed(title = f"{f'{m.display_name}が' if not member else ''}{activity.name}で再生中", description="これ以上の情報は不明です。おそらくローカルファイルを再生中です。", color = discord.Colour(0x1DB954))
+                        embed = discord.Embed(title = f"{f'{m.display_name}が' if not member else ''}{activity.name}で再生中", description="これ以上の情報は不明です。\n-# おそらくローカルファイルを再生中です。", color = discord.Colour(0x1DB954))
                         embed.add_field(name = "タイトル", value = activity.details, inline = False)
                         if activity.state:
                             embed.add_field(name = "詳細", value = activity.state, inline = False)
@@ -65,7 +65,7 @@ class spotify(commands.Cog):
                         await interaction.response.send_message(embed = embed, view=view, ephemeral=True if not member else False)
                         return
                 continue
-            await interaction.response.send_message("Spotify / YTMusicのコンテンツを再生していません。\n-# 注:Spotifyの場合、ローカルファイルは表示されません。", ephemeral=True)
+            await interaction.response.send_message("Spotify / YTMusicのコンテンツを再生していません。", ephemeral=True)
             return
         else:
             await interaction.response.send_message(f"{m.mention}は何もしていないようです。", ephemeral=True)
