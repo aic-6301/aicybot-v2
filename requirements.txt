@@ -3,4 +3,4 @@ discord.py
 python-dotenv
 discord.py-pagination
 jishaku
-googlesearch
+googlesearch-python

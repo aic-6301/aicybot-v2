@@ -27,7 +27,7 @@ class spotify(commands.Cog):
                 if isinstance(activity, discord.Spotify):
                     embed = discord.Embed(title = f"{f'{m.display_name}が' if member else ''}Spotifyで再生中",
                                           color = discord.Colour(0x1DB954))
-                    embed.add_field(name = "タイトル",     value = activity.title, inline = False)
+                    embed.add_field(name = "タイトル",     value = f"[{activity.title}]({activity.track_url}", inline = False)
                     embed.add_field(name = "アーティスト", value = f"[{activity.artist}](https://google.com/search?q={activity.artist.replace(' ', '+')})", inline = False)
                     embed.add_field(name = "アルバム",     value = f"[{activity.album}](https://google.com/search?q={activity.album.replace(' ', '+')})", inline = False)
                     embed.add_field(name = "再生開始時間", value = f"{discord.utils.format_dt(activity.start, 'T')}", inline = False)
