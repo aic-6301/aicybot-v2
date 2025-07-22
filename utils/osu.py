@@ -24,6 +24,7 @@ def get_access_token(client_id: str, client_secret: str):
 
     tokens.Expirts_time = datetime.now() + timedelta(seconds=expires_in)
     tokens.Access_token = access_token
+    print(f"Access token: {access_token}, Expires in: {expires_in} seconds")
     return access_token, tokens.Expirts_time
 
 def get_refresh_token(client_id, client_secret):
@@ -65,4 +66,12 @@ def make_api_request(endpoint, params=None):
 
 def get_user(user_id: any):
     response = make_api_request(f"users/{user_id}")
+    return response.json()
+
+def get_recent(user_id: any):
+    response = make_api_request(f"users/{user_id}/scores/recent")
+    return response.json()
+
+def get_beatmap(beatmap_id: int):
+    response = make_api_request(f"beatmaps/{beatmap_id}")
     return response.json()

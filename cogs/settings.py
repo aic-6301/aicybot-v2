@@ -22,6 +22,17 @@ class settings(commands.Cog):
         database.set('expand', 'bool', mode, interaction.guild.id)
         await interaction.response.send_message(f'メッセージの展開を{"有効" if mode else "無効"}にしました。', ephemeral=True)
     
+    @settings.command(name='osuexpand', description='osu!のメッセージを自動で展開するか設定します。')
+    @app_commands.describe(mode='展開するかどうかを設定します。')
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="展開する", value=1),
+        app_commands.Choice(name="展開しない", value=0)
+    ])
+    @app_commands.default_permissions(manage_guild=True)
+    async def osuexpand(self, interaction: discord.Interaction, mode: int):
+        database.set('osu_expand', 'bool', mode, interaction.guild.id)
+        await interaction.response.send_message(f'osu!のメッセージの展開を{"有効" if mode else "無効"}にしました。', ephemeral=True)
+    
     @settings.command(name='join', description='メンバーが参加した際の通知を設定します。')
     @app_commands.describe(mode='通知するかどうかを設定します。', channel='通知するチャンネルを設定します。')
     @app_commands.choices(mode=[
