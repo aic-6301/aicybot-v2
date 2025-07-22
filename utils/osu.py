@@ -5,7 +5,7 @@ import os
 
 class tokens():
     Access_token = None
-    Expirts_time = None
+    Expires_time = None
 
 
 def get_access_token(client_id: str, client_secret: str):
