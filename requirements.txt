@@ -4,3 +4,5 @@ python-dotenv
 discord.py-pagination
 jishaku
 googlesearch-python
+
+matplotlib
