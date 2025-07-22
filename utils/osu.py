@@ -22,14 +22,14 @@ def get_access_token(client_id: str, client_secret: str):
     access_token = token_response["access_token"]
     expires_in = token_response["expires_in"]
 
-    tokens.Expirts_time = datetime.now() + timedelta(seconds=expires_in)
+    tokens.Expires_time = datetime.now() + timedelta(seconds=expires_in)
     tokens.Access_token = access_token
     print(f"Access token: {access_token}, Expires in: {expires_in} seconds")
     return access_token, tokens.Expirts_time
 
 def get_refresh_token(client_id, client_secret):
    current_time = datetime.now()
-   expirts_time = tokens.Expirts_time
+   expires_time = tokens.Expires_time
    if current_time > expirts_time:
        print("期限を超えているため、トークンを更新します")
        token_url = "https://osu.ppy.sh/oauth/token"
