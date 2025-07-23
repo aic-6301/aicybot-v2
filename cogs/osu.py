@@ -54,11 +54,11 @@ class osu(commands.Cog):
         x = []
         y = []
         
-        for d in data:
-            datetimeobj = datetime.strptime(d['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        for i in range(len(data)):
+            datetimeobj = datetime.strptime(data[i]['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
             y.append(datetimeobj.strftime('%Y-%m-%d'))
-            x.append(d['score'])
-        
+            x.append(data[i]['score'])
+
         ax.plot(y, x, color='yellow', linestyle='-', linewidth=2, markersize=5)
 
         fig.set_facecolor('#2a2326')
@@ -66,6 +66,9 @@ class osu(commands.Cog):
         ax.xaxis.label.set_color('#ffffff')
         ax.yaxis.label.set_color('#ffffff')
         plt.gca().axis('off')
+        
+        plt.gca().invert_xaxis()
+        plt.gca().invert_yaxis()
         
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
