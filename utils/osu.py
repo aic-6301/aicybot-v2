@@ -18,19 +18,23 @@ def get_access_token(client_id: str, client_secret: str):
     }
 
     response = requests.post(token_url, data=data)
+    if not response.ok:
+        raise Exception(f"Failed to get access token: {response.status_code} {response.text}")
     token_response = response.json()
+    if "access_token" not in token_response or "expires_in" not in token_response:
+        raise Exception("Invalid token response: missing required fields")
     access_token = token_response["access_token"]
     expires_in = token_response["expires_in"]
 
     tokens.Expires_time = datetime.now() + timedelta(seconds=expires_in)
     tokens.Access_token = access_token
-    print(f"Access token: {access_token}, Expires in: {expires_in} seconds")
-    return access_token, tokens.Expirts_time
+    # print(f"Access token: {access_token}, Expires in: {expires_in} seconds")
+    return access_token, tokens.Expires_time
 
 def get_refresh_token(client_id, client_secret):
    current_time = datetime.now()
    expires_time = tokens.Expires_time
-   if current_time > expirts_time:
+   if current_time > expires_time:
        print("期限を超えているため、トークンを更新します")
        token_url = "https://osu.ppy.sh/oauth/token"
        data = {
@@ -45,11 +49,11 @@ def get_refresh_token(client_id, client_secret):
        access_token = token_response["access_token"]
        expires_in = token_response["expires_in"]
    
-       expirts_time = datetime.now() + timedelta(seconds=expires_in)
-       return access_token, expirts_time 
+       expires_time = datetime.now() + timedelta(seconds=expires_in)
+       return access_token, expires_time 
    else:
        print("期限内のため、処理を継続します")
-       return tokens.Access_token, tokens.Expirts_time
+       return tokens.Access_token, tokens.Expires_time
    
 def make_api_request(endpoint, params=None):
     access_token, expires_time = get_refresh_token(os.getenv('OSU_TOKEN'), os.getenv('OSU_SECRET_TOKEN'))
