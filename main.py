@@ -10,7 +10,7 @@ import traceback
 import asyncio
 import datetime
 
-from utils import database
+from utils import database, osu
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -37,6 +37,12 @@ class aicybot(commands.Bot):
         self.logger.debug('Setup Database')
         database.setup()
         self.logger.info('Loaded Database')
+        try:
+            osu.get_access_token(os.getenv('OSU_TOKEN'), os.getenv('OSU_SECRET_TOKEN'))
+            self.logger.info("Got access token")
+        except Exception as e:
+            self.logger.info("Failed to get access token", e)
+            traceback.print_exc()
         self.logger.debug('Loading Cogs')
         for file in os.listdir("./cogs"):
             if file.endswith('.py'):

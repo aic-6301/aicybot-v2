@@ -28,6 +28,38 @@ class settings(commands.Cog):
             database.update('settings', ['expand'], [mode], key_value = interaction.guild.id)
         await interaction.response.send_message(f'メッセージの展開を{"有効" if mode else "無効"}にしました。', ephemeral = True)
     
+    @settings.command(name='osuexpand', description='osu!のメッセージを自動で展開するか設定します。')
+    @app_commands.describe(mode='展開するかどうかを設定します。')
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="展開する", value=1),
+        app_commands.Choice(name="展開しない", value=0)
+    ])
+    @app_commands.default_permissions(manage_guild=True)
+    async def osuexpand(self, interaction: discord.Interaction, mode: int):
+        database.set('osu_expand', 'bool', mode, interaction.guild.id)
+        await interaction.response.send_message(f'osu!のメッセージの展開を{"有効" if mode else "無効"}にしました。', ephemeral=True)
+    
+    @settings.command(name='join', description='メンバーが参加した際の通知を設定します。')
+    @app_commands.describe(mode='通知するかどうかを設定します。', channel='通知するチャンネルを設定します。')
+    @app_commands.choices(mode=[
+        app_commands.Choice(name="通知する", value=1),
+        app_commands.Choice(name="通知しない", value=0)
+    ])
+    async def join(self, interaction: discord.Interaction, mode: int, channel: discord.TextChannel = None):
+        if mode and not channel:
+            if interaction.guild.system_channel is None:
+                await interaction.response.send_message('通知チャンネルが設定されていません。', ephemeral=True)
+                return
+            channel = interaction.guild.system_channel
+
+        channel_id = channel.id if channel else 0
+
+        try:
+            database.set_channel('join', mode, channel_id, interaction.guild.id)
+            await interaction.response.send_message(f'参加通知を{f"有効にし、{channel.mention}に通知チャンネルを設定" if mode else "無効に"}しました。', ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f'エラーが発生しました: {e}', ephemeral=True)
+    
     @settings.command(name = 'log', description = 'ログを設定します。')
     @app_commands.describe(mode = 'ログを有効にするかどうかを設定します。', channel = 'ログを送信するチャンネルを設定します。')
     @app_commands.choices(mode = [

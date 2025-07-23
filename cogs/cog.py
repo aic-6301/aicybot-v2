@@ -117,7 +117,7 @@ class cog(commands.Cog):
             if len(embeds) == 1:
                 await interaction.response.send_message(embed = embeds[0], ephemeral = True)
             else:
-                await Paginator.Simple(ephemeral = True).start(interaction, embeds)
+                await Paginator.Simple(ephemeral=True).start(interaction, embeds)
             
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
