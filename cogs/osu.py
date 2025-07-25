@@ -204,7 +204,7 @@ class osu(commands.Cog):
             embed.add_field(name="🎵 スコア", value=play['score'], inline=False)
             embed.add_field(name="✨ PP", value=f"{pp}", inline=True)
             embed.add_field(name="🎯 精度", value=f"{float(play['accuracy'] * 100):.2f}%", inline=True)
-            embed.add_field(name="🏅 ランク", value=play['rank'], inline=True)
+            embed.add_field(name="🏅 ランク", value=osuapi.convert_rank(play['rank']), inline=True)
             embed.add_field(name="⌛ プレイ時間", value=play['created_at'], inline=False)
             embed.add_field(name="📘 難易度", value=play['beatmap']['difficulty_rating'], inline=True)
             embed.add_field(name="🎛️ BPM", value=beatmap['bpm'], inline=True)

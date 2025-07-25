@@ -79,3 +79,20 @@ def get_recent(user_id: any):
 def get_beatmap(beatmap_id: int):
     response = make_api_request(f"beatmaps/{beatmap_id}")
     return response.json()
+
+
+def convert_rank(rank: str) -> str:
+    """
+    Convert osu! rank to a more readable format.
+    """
+    rank_map = {
+        'XH': 'SS (Silver)',
+        'X': 'SS',
+        'SH': 'S (Silver)',
+        'S': 'S',
+        'A': 'A',
+        'B': 'B',
+        'C': 'C',
+        'D': 'D'
+    }
+    return rank_map.get(rank, rank)  # Return the rank or the original if not found
