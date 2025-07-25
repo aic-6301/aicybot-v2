@@ -164,7 +164,8 @@ class osu(commands.Cog):
         else:
             user = '@'+user
         # try:
-        data = osuapi.get_recent(user)
+        user_api = osuapi.get_user(user)
+        data = osuapi.get_recent(user_api['id'])
         print(data)
         if not data:
             await interaction.followup.send("最近のプレイが見つかりませんでした。", ephemeral=True)
@@ -188,17 +189,25 @@ class osu(commands.Cog):
                 pp = 0
             else:
                 pp = f"{float(play['pp']):.2f}"
-            
-            
-            embed = discord.Embed(title=f"{play['beatmapset']['title']}", color=discord.Color.dark_gold(), url=play['beatmap']['url'])
-            embed.set_thumbnail(url=play['beatmapset']['covers']['list'])
+
+
+            embed = discord.Embed(title=f"{play['beatmapset']['title']}@{play['beatmap']['version']} ({play['beatmap']['status']})", 
+                                  color=discord.Color.dark_gold(), 
+                                  url=play['beatmap']['url'])
+            embed.set_image(url=play['beatmapset']['covers']['cover'])
             embed.add_field(name="🥁 コンボ", 
-                            value=f"{combo}{play['max_combo']}/{beatmap['max_combo'] if play['passed'] else '😱失敗'}", inline=False)
+                            value=f"{combo}{play['max_combo']}/{beatmap['max_combo'] if play['passed'] else '😱失敗'}", 
+                            inline=False)
+            embed.add_field(name="300 / :100:100 / 50 / :x:miss", 
+                            value=f"{play['statistics']['count_300']} / {play['statistics']['count_100']} / {play['statistics']['count_50']} / {play['statistics']['count_miss']}", 
+                            inline=False)
             embed.add_field(name="🎵 スコア", value=play['score'], inline=False)
-            embed.add_field(name="✨ PP", value=f"{pp}", inline=False)
-            embed.add_field(name="🎯 精度", value=f"{float(play['accuracy'] * 100):.2f}%", inline=False)
+            embed.add_field(name="✨ PP", value=f"{pp}", inline=True)
+            embed.add_field(name="🎯 精度", value=f"{float(play['accuracy'] * 100):.2f}%", inline=True)
+            embed.add_field(name="🏅 ランク", value=play['rank'], inline=True)
             embed.add_field(name="⌛ プレイ時間", value=play['created_at'], inline=False)
-            embed.add_field(name="🅰️ ランク", value=play['rank'], inline=False)
+            embed.add_field(name="📘 難易度", value=play['beatmap']['difficulty_rating'], inline=True)
+            embed.add_field(name="🎛️ BPM", value=beatmap['bpm'], inline=True)
             embed.add_field(name="🛠️ Mod", value=', '.join(play['mods']) if play['mods'] else 'なし', inline=False)
             embed.set_footer(text=play['beatmap']['beatmapset_id'])
             embeds.append(embed)
