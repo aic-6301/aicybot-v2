@@ -41,7 +41,7 @@ class logger(commands.Cog):
     # チャンネル更新
     @commands.Cog.listener()
     async def on_guild_channel_update(self, before: discord.abc.GuildChannel, after: discord.abc.GuildChannel):
-        if before.name == after.name and before.topic == after.topic:
+        if before.name == after.name and before.topic and before.topic == after.topic:
             return
         embed = discord.Embed(title = "🔃 - チャンネル更新", 
                               description = f"{before.mention}が更新されました。", 
