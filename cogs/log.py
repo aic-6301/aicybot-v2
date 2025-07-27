@@ -43,13 +43,23 @@ class logger(commands.Cog):
     async def on_guild_channel_update(self, before: discord.abc.GuildChannel, after: discord.abc.GuildChannel):
         if before.name == after.name and before.topic and before.topic == after.topic:
             return
+        if before.topic != after.topic and before.topic is not None and after.topic is not None:
+            before_topic = f"トピック\n{before.topic}"
+            after_topic = f"トピック\n{after.topic}"
+        else:
+            before_topic = ""
+            after_topic = ""
+        if before.name != after.name:
+            before_name = f"名前\n{before.name}\n"
+            after_name = f"名前\n{after.name}\n"
+        else:
+            before_name = ""
+            after_name = ""
         embed = discord.Embed(title = "🔃 - チャンネル更新", 
                               description = f"{before.mention}が更新されました。", 
                               color = discord.Color.orange())
-        embed.add_field(name = "変更前", value = (f'> 名前\n{before.name}\n' if before.name != after.name else "") +
-                        
-                        (f'> トピック\n{before.topic}' if before.topic != after.topic else ""))
-        embed.add_field(name = "変更後", value = (f'> 名前\n{after.name}\n' if before.name != after.name else "") + (f'> トピック\n{after.topic}' if before.topic != after.topic else ""))
+        embed.add_field(name = "変更前", value = (before_name + before_topic))
+        embed.add_field(name = "変更後", value = (after_name + after_topic))
         async for entry in before.guild.audit_logs(limit = 1, action = discord.AuditLogAction.channel_update):
             embed.add_field(name = "変更した人", value = entry.user.mention)
         if database.get('log', before.guild.id) is not None:
