@@ -10,7 +10,7 @@ setup_query = [
     'CREATE TABLE IF NOT EXISTS ticket (id TEXT(8) NOT NULL, guild INTEGER NOT NULL, name TEXT NOT NULL, category INTEGER DEFAULT 0, channel INTEGER DEFAULT 0, roles TEXT DEFAULT 0, unlimited BOOLEAN DEFAULT 0)',
     'CREATE TABLE IF NOT EXISTS tickets (id TEXT(8) PRIMARY KEY, ticket_id TEXT, user INTEGER, channel INTEGER, guild INTEGER, number INTEGER, messages TEXT, closed BOOLEAN, responser INTEGER DEFAULT 0, FOREIGN KEY(ticket_id) REFERENCES ticket(id))',
     'CREATE TABLE IF NOT EXISTS autopublish (guild INTEGER PRIMARY KEY, channel TEXT DEFAULT 0, unlimited BOOLEAN DEFAULT 0)',
-    'CREATE TABLE IF NOT EXISTS log (guild INTEGER PRIMARY KEY, log_ch INTEGER DEFAULT 0)',
+    'CREATE TABLE IF NOT EXISTS log (guild INTEGER PRIMARY KEY, bool BOOLEAN DEFAULT 0, log_ch INTEGER DEFAULT 0)',
 ]
 
 def connect():
