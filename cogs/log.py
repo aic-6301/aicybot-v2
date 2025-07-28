@@ -41,20 +41,28 @@ class logger(commands.Cog):
     # チャンネル更新
     @commands.Cog.listener()
     async def on_guild_channel_update(self, before: discord.abc.GuildChannel, after: discord.abc.GuildChannel):
-        if before.type != discord.ChannelType.text:
+        if before.type == discord.ChannelType.text:
             if before.name != after.name:
                 before_name = f"名前\n{before.name}\n"
                 after_name = f"名前\n{after.name}\n"
             else:
                 before_name = None
                 after_name = None
-        else:
             if before.topic != after.topic and before.topic is not None and after.topic is not None:
                 before_topic = f"トピック\n{before.topic}"
                 after_topic = f"トピック\n{after.topic}"
             else:
                 before_topic = None
                 after_topic = None
+            before_topic = None
+            after_topic = None
+        else:
+            if before.name != after.name:
+                before_name = f"名前\n{before.name}\n"
+                after_name = f"名前\n{after.name}\n"
+            else:
+                before_name = None
+                after_name = None
         if before_topic is None and before_name is None:
             return
         embed = discord.Embed(title = "🔃 - チャンネル更新", 
