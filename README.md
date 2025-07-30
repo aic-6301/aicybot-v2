@@ -1,3 +1,14 @@
 # aicybot-v2
-ライセンスを読んでご使用ください。
+ライセンスを読んでご使用ください。  
 python 3.12以上でないと起動しません。
+
+# How to use?
+1. `pip install -r requirements.txt`
+2. `python main.py`
+
+# Features
+- osu score viewer
+- autoreply
+  - メッセージに反応して返信
+- server info viewer
+- Music Playing Viewer
