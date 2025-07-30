@@ -7,8 +7,8 @@ python 3.12以上でないと起動しません。
 2. `python main.py`
 
 # Features
-- osu score viewer
-- autoreply
+- osu score viewer ( /osu user,score )
+- autoreply ( /autoreply )
   - メッセージに反応して返信
-- server info viewer
-- Music Playing Viewer
+- server info viewer ( /server )
+- Music Playing Viewer ( /playing )
