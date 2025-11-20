@@ -1,0 +1,300 @@
+{
+    "loading": "Loading...",
+    "error": {
+        "title": "Error",
+        "multiple_commands": "Multiple commands are specified in keywords or reply content.",
+        "try_again": "An error occurred. Please try again."
+    },
+    "osu": {
+        "description": "Displays osu! information.",
+        "error": {
+            "not_found_user": "Player not found.",
+            "invalid_username": "Invalid username.",
+            "not_linked": "osu! account is not linked.\nPlease use the /osu link command to link.",
+            "no_recent_plays": "No recent plays found.",
+            "no_beatmap": "Beatmap not found."
+        },
+        "success": {
+            "linked": "osu! account linked successfully.",
+            "unlinked": "osu! account unlinked.",
+            "updated": "osu! account information updated."
+        },
+        "recent_description": "Displays recent plays. (Last 24 hours)",
+        "user_description": "Fetches information for the specified user.",
+        "user": "Username",
+        "info": "Info for {name}",
+        "score": "🎵 Score",
+        "pp": "✨ PP",
+        "accuracy": "🎯 Accuracy",
+        "combo": "🥁 Combo",
+        "rank": "🏅 Rank",
+        "difficulty": "📘 Difficulty",
+        "bpm": "🎛️ BPM",
+        "mods": "🛠️ Mod",
+        "failed": "😱 Failed",
+        "playcount": "Play Count",
+        "downloaded": "Downloads",
+        "playtime": "Play Time",
+        "max_combo": "Max Combo",
+        "level": "🎚️ Level",
+        "ranking": "🏆 Country Ranking / Global Ranking",
+        "playtime_count": "⌛ Play Time / Play Count",
+        "playtime_count_text": "{playtime} hours / {playcount} plays"
+    },
+    "settings": {
+        "expand": {
+            "descritpion": "Set whether to automatically expand messages.",
+            "mode": "Set whether to expand.",
+            "True": "Expand",
+            "False": "Do not expand",
+            "success": "Message expansion set to {mode}."
+        },
+        "osuexpand": {
+            "description": "Set whether to automatically expand osu! messages.",
+            "mode": "Set whether to expand.",
+            "True": "Expand",
+            "False": "Do not expand",
+            "success": "osu! message expansion set to {mode}."
+        },
+        "join": {
+            "description": "Set whether to send a message when a new member joins the server.",
+            "mode": "Set whether to notify.",
+            "channel": "Set the notification channel.",
+            "True": "Send message",
+            "False": "Do not send message",
+            "success": "Join notification set to {mode} and will notify in {channel}."
+        },
+        "log": {
+            "description": "Set whether to record server logs.",
+            "mode": "Set whether to record logs.",
+            "channel": "Set the log channel.",
+            "True": "Record logs",
+            "False": "Do not record logs",
+            "success": "Log function set to {mode} and will send to {channel}."
+        }
+    },
+    "server": {
+        "not_found": "Server not found.",
+        "not_in_server": "You are not a member of this server.",
+        "server_id": "Server ID",
+        "owner": "Server Owner",
+        "member_count": "Member Count",
+        "created_at": "Created At",
+        "boost_level": "Boost Level",
+        "boost_count": "Boost Count",
+        "region": "Server Region",
+        "total_channel_count": "Total Channels",
+        "total_channel_count_text": "Channels (including categories)",
+        "total_voice_channel_count": "<:voice_channels:1348887353204281425> Voice Channels",
+        "total_text_channel_count": "<:text_channels:1348887353204281425> Text Channels",
+        "total_category_count": "<:categories:1348887353204281425> Categories",
+        "total_role_count": "<:roles:1348887353204281425> Roles",
+        "total_emote_count": "🧵 Emojis"
+    },
+    "member": {
+        "not_found": "Member not found.",
+        "not_in_server": "You are not a member of this server.",
+        "info": "Info for {name}",
+        "id": "User ID",
+        "name": "Name",
+        "joined_at": "Joined At",
+        "created_at": "Account Created At",
+        "roles": "Roles",
+        "status": "Status"
+    },
+    "rolepanel": {
+        "description": "Manage role panels.",
+        "error": {
+            "not_found_panel": "Specified role panel not found.",
+            "not_role_in_panel": "Role not found.\nPlease set the role and try again.",
+            "not_found_role": "Specified role not found.",
+            "not_found_role_footer": "The role may have been deleted.",
+            "cant_add": "Could not add role.\nInsufficient permissions.",
+            "already_exists": "This role panel already exists."
+        },
+        "success": {
+            "added": "Added role: {role}",
+            "removed": "Removed role: {role}",
+            "updated": "Role panel updated.",
+            "created": "Role panel created.",
+            "deleted": "Role panel deleted.",
+            "added_role": "Role added: {role}",
+            "removed_role": "Role removed: {role}"
+        },
+        "create": {
+            "description": "Create a role panel.",
+            "name": "Role panel name"
+        },
+        "delete": {
+            "description": "Delete a role panel.",
+            "name": "Role panel name to delete"
+        },
+        "addrole": {
+            "description": "Add a role to a role panel.",
+            "name": "Role panel name",
+            "role": "Role name to add"
+        },
+        "removerole": {
+            "description": "Remove a role from a role panel.",
+            "name": "Role panel name",
+            "role": "Role name to remove"
+        },
+        "send": {
+            "description": "Send a role panel.",
+            "name": "Role panel name",
+            "channel": "Destination channel",
+            "choose_role": "Choose a role",
+            "success": "Sent role panel {name} to {channel}."
+        }
+    },
+    "expand": {
+        "deleted": "Deleted.",
+        "jump_to": "Jump to message",
+        "delete": "Delete"
+    },
+    "music": {
+        "description": "Displays information about the currently playing music.",
+        "member": "Member to get information for",
+        "spotify_playing": "Playing on Spotify",
+        "title": "Title",
+        "artist": "Artist",
+        "album": "Album",
+        "duration": "Duration",
+        "started_at": "Started At",
+        "detail": "Details",
+        "not_playing": "No music is currently playing.",
+        "nothing": "It seems nothing is happening."
+    },
+    "log": {
+        "message_edit": "📝 - Message Edited",
+        "message_edit_description": "{user} edited a message.",
+        "before_edit": "Before Edit",
+        "after_edit": "After Edit",
+        "message_link": "Message Link",
+        "channel": "Channel",
+        "message_delete": "🗑️ - Message Deleted",
+        "message_delete_description": "{user} deleted a message.",
+
+        "name": "Name",
+        "content": "Content",
+        "topic": "Topic",
+        "color": "Color",
+        "emoji": "Emoji",
+        "position": "Position",
+        "permissions": "Permissions",
+        "updator": "Updater",
+        "banned": "🔨 - Member Banned",
+        "id": "ID",
+        "reason": "Reason",
+        "category": "Category",
+
+        "channel_create": "📁 - Channel Created",
+        "channel_create_description": "{channel} created a channel.",
+        "channel_changed": "🔃 - Channel Updated",
+        "channel_changed_description": "{channel} updated a channel.",
+        "channel_delete": "🗑️ - Channel Deleted",
+        "channel_delete_description": "{user} deleted a channel.",
+
+        "member_joined": "📥 - Member Joined",
+        "member_joined_description": "{user} joined the server.",
+        "member_left": "📤 - Member Left",
+        "member_left_description": "{user} left the server.",
+        "role_changed": "🔃 - Role Updated",
+        "role_changed_description": "{user} updated a role.",
+
+        "bannedby": "Banned By",
+        "unbanned": "✅ - Member Unbanned",
+        "unbanned_description": "{user} was unbanned.",
+
+        "kicked": "🦶 - User Kicked",
+        "kicked_description": "{user} was kicked from the server.",
+
+        "kickedby": "Kicked By",
+        "nonactive_kick_description": "Inactive members were kicked in bulk.",
+        "nonactive_kicked": "Number Kicked",
+        "nonactive_days": "Inactive Period (days)",
+
+        "message_deleted": "🗑️ - Message Deleted",
+        "message_deleted_description": "{user} deleted a message.",
+        "deleted_by": "Deleted By",
+
+        "bulk_deleted": "🗑️ - Bulk Message Deleted",
+        "bulk_deleted_description": "Messages in {channel} were deleted in bulk.",
+        "bulk_deleted_count": "Number of Messages Deleted",
+
+        "role_create": "➕ - Role Created",
+        "role_create_description": "{role} created a role.",
+
+        "role_delete": "🗑️ - Role Deleted",
+        "role_delete_description": "{role} deleted a role.",
+
+        "invite_create": "🔗 - Invite Created",
+        "invite_create_description": "{user} created an invite link.",
+
+        "invite_code": "Invite Code",
+        "invite_max_uses": "Max Uses",
+        "invite_expires_at": "Expires At",
+        "invite_link": "Invite Link",
+        "created_by": "Created By",
+        "invite_delete": "🔗 - Invite Deleted",
+        "invite_delete_description": "{user} deleted an invite link.",
+
+        "member_role_update": "🔃 - Member Role Updated",
+        "member_role_update_description": "{user}'s roles were updated.",
+        "added_roles": "Added Roles",
+        "removed_roles": "Removed Roles",
+
+        "member_update": "🔃 - Member Updated",
+        "member_nick_update_description": "{user}'s nickname was updated.",
+
+        "timed_out": "🔇 - Member Timed Out",
+        "timed_out_description": "{user} was timed out.",
+
+        "untimed_out": "✅ - Member Timeout Removed",
+        "untimed_out_description": "{user}'s timeout was removed.",
+        "time_out_duration": "Timeout Duration",
+
+        "vc_join": "🚪 - VC Joined",
+        "vc_join_description": "{user} joined {channel}.",
+
+        "vc_leave": "🚶‍♂️ - VC Left",
+        "vc_leave_description": "{user} left {channel}.",
+
+        "vc_move": "🚶‍♂️‍➡️ - VC Moved",
+        "vc_move_description": "{user} moved from {from_channel} to {to_channel}."
+    },
+
+    "autoreply": {
+        "description": "Manage auto-replies.",
+        "error": {
+            "not_found_reply": "Specified auto-reply not found.",
+            "already_exists": "This auto-reply already exists.",
+            "not_found_keyword": "Specified keyword/ID not found."
+        },
+        "success": {
+            "created": "Auto-reply created.",
+            "updated": "Auto-reply updated.",
+            "deleted": "Auto-reply deleted."
+        },
+        "add": {
+            "description": "Create an auto-reply.",
+            "keyword": "Keyword (re: for regex, full: for exact match)",
+            "reply": "Reply content (noreply: for no reply,\nreact: for reaction.\nrandom: for random reply)",
+            "title": "Add Auto-reply",
+            "em_description": "Keyword: `{keyword}`\nReply: `{reply}`\nYou can delete with `/autoreply delete content:{_id}` or `/autoreply delete content:{keyword}`."
+        },
+        "delete": {
+            "description": "Delete an auto-reply.",
+            "keyword": "Keyword / ID to delete",
+            "deleted_content": "Deleted reply content"
+        },
+        "list": {
+            "description": "Show list of auto-replies.",
+            "title": "Auto-reply List",
+            "empty": "No auto-replies registered.",
+            "keyword": "Keyword",
+            "reply": "Reply",
+            "register": "Registered By"
+        }
+    }
+}

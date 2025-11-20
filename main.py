@@ -11,6 +11,7 @@ import asyncio
 import datetime
 
 from utils import database, osu
+from utils.locale import MyTranslator
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -61,6 +62,7 @@ class aicybot(commands.Bot):
             self.logger.info("jishaku failed to load", e)
             traceback.print_exc()
         self.logger.debug('Syncing slash commands')
+        await self.tree.set_translator(MyTranslator())
         synced = await self.tree.sync()
         self.logger.info(f"Synced {len(synced)} commands")
         self.logger.info('Bot is ready!')

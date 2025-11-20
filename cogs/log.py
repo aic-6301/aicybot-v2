@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 from discord import app_commands
 
 from utils import database
+from utils.locale import t
 
 class logger(commands.Cog):
     def __init__(self, bot):
@@ -15,13 +16,13 @@ class logger(commands.Cog):
             return
         if before.content == after.content:
             return
-        embed = discord.Embed(title = "📝 - メッセージ編集", 
-                              description = f"{before.author.mention}がメッセージを編集しました。", 
+        embed = discord.Embed(title = t(before.guild.preferred_locale.value, "log.message_edit"), 
+                              description = t(before.guild.preferred_locale.value, "log.message_edit_description", author=before.author.mention), 
                               color = discord.Color.orange())
-        embed.add_field(name = "編集前", value = before.content)
-        embed.add_field(name = "編集後", value = after.content)
-        embed.add_field(name = "メッセージリンク", value = after.jump_url, inline = False)
-        embed.add_field(name = "チャンネル", value = before.channel.mention, inline = False)
+        embed.add_field(name = t(before.guild.preferred_locale.value, "log.before"), value = before.content)
+        embed.add_field(name = t(before.guild.preferred_locale.value, "log.after"), value = after.content)
+        embed.add_field(name = t(before.guild.preferred_locale.value, "log.message_link"), value = after.jump_url, inline = False)
+        embed.add_field(name = t(before.guild.preferred_locale.value, "log.channel"), value = before.channel.mention, inline = False)
         if database.get('settings', before.guild.id)[1] is not None:
             await self.bot.get_channel(database.get('settings', before.guild.id)[1]).send(embed = embed)
 
@@ -30,11 +31,11 @@ class logger(commands.Cog):
     async def on_message_delete(self, message: discord.Role):
         if message.author.bot or message.guild is None:
             return
-        embed = discord.Embed(title = "🗑️ - メッセージ削除", 
-                              description = f"{message.author.mention}がメッセージを削除しました。", 
+        embed = discord.Embed(title = t(message.guild.preferred_locale.value, "log.message_delete"), 
+                              description = t(message.guild.preferred_locale.value, "log.message_delete_description", author=message.author.mention), 
                               color = discord.Color.red())
-        embed.add_field(name = "内容", value = message.content)
-        embed.add_field(name = "チャンネル", value = message.channel.mention)
+        embed.add_field(name = t(message.guild.preferred_locale.value, "log.content"), value = message.content)
+        embed.add_field(name = t(message.guild.preferred_locale.value, "log.channel"), value = message.channel.mention)
         if database.get('settings', message.guild.id)[1] is not None:
             await self.bot.get_channel(database.get('settings', message.guild.id)[1]).send(embed = embed)
 
@@ -43,14 +44,14 @@ class logger(commands.Cog):
     async def on_guild_channel_update(self, before: discord.abc.GuildChannel, after: discord.abc.GuildChannel):
         if before.type == discord.ChannelType.text:
             if before.name != after.name:
-                before_name = f"名前\n{before.name}\n"
-                after_name = f"名前\n{after.name}\n"
+                before_name = f"{t(before.guild.preferred_locale.value, 'log.name')}\n{before.name}\n"
+                after_name = f"{t(after.guild.preferred_locale.value, 'log.name')}\n{after.name}\n"
             else:
                 before_name = None
                 after_name = None
             if before.topic != after.topic and before.topic is not None and after.topic is not None:
-                before_topic = f"トピック\n{before.topic}"
-                after_topic = f"トピック\n{after.topic}"
+                before_topic = f"{t(before.guild.preferred_locale.value, 'log.topic')}\n{before.topic}"
+                after_topic = f"{t(after.guild.preferred_locale.value, 'log.topic')}\n{after.topic}"
             else:
                 before_topic = None
                 after_topic = None
@@ -58,46 +59,46 @@ class logger(commands.Cog):
             after_topic = None
         else:
             if before.name != after.name:
-                before_name = f"名前\n{before.name}\n"
-                after_name = f"名前\n{after.name}\n"
+                before_name = f"{t(before.guild.preferred_locale.value, 'log.name')}\n{before.name}\n"
+                after_name = f"{t(after.guild.preferred_locale.value, 'log.name')}\n{after.name}\n"
             else:
                 before_name = None
                 after_name = None
         if before_topic is None and before_name is None:
             return
-        embed = discord.Embed(title = "🔃 - チャンネル更新", 
+        embed = discord.Embed(title = t(before.guild.preferred_locale.value, "log.channel_update"), 
                               description = f"{before.mention}が更新されました。", 
                               color = discord.Color.orange())
-        embed.add_field(name = "変更前", value = (before_name + before_topic))
-        embed.add_field(name = "変更後", value = (after_name + after_topic))
+        embed.add_field(name = t(before.guild.preferred_locale.value, "log.before"), value = (before_name + before_topic))
+        embed.add_field(name = t(before.guild.preferred_locale.value, "log.after"), value = (after_name + after_topic))
         async for entry in before.guild.audit_logs(limit = 1, action = discord.AuditLogAction.channel_update):
-            embed.add_field(name = "変更した人", value = entry.user.mention)
+            embed.add_field(name = t(before.guild.preferred_locale.value, "log.changed_by"), value = entry.user.mention)
         if database.get('settings', before.guild.id)[1] is not None:
             await self.bot.get_channel(database.get('settings', before.guild.id)[1]).send(embed = embed)
 
     # チャンネル削除
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel):
-        embed = discord.Embed(title = "🗑️ - チャンネル削除", 
+        embed = discord.Embed(title = t(channel.guild.preferred_locale.value, "log.channel_delete"), 
                               description = f"{channel.mention}が削除されました。", 
                               color = discord.Color.red())
-        embed.add_field(name = "名前", value = channel.name)
-        embed.add_field(name = "ID", value = channel.id)
+        embed.add_field(name = t(channel.guild.preferred_locale.value, "log.name"), value = channel.name)
+        embed.add_field(name = t(channel.guild.preferred_locale.value, "log.id"), value = channel.id)
         async for entry in channel.guild.audit_logs(limit = 1, action = discord.AuditLogAction.channel_delete):
-            embed.add_field(name = "削除した人", value = entry.user.mention)
+            embed.add_field(name = t(channel.guild.preferred_locale.value, "log.deleted_by"), value = entry.user.mention)
         if database.get('settings', channel.guild.id)[1] is not None:
             await self.bot.get_channel(database.get('settings', channel.guild.id)[1]).send(embed = embed)
 
     # メンバー参加
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        embed = discord.Embed(title = "📥 - メンバー参加", 
-                              description = f"{member.mention}が参加しました。", 
+        embed = discord.Embed(title = t(member.guild.preferred_locale.value, "log.member_join"), 
+                              description = t(member.guild.preferred_locale.value, "log.member_join_description", member=member.mention), 
                               color = discord.Color.green())
-        embed.add_field(name = "名前", value = member.name)
-        embed.add_field(name = "ID", value = member.id)
-        embed.add_field(name = "アカウント作成日", value = member.created_at)
-        embed.add_field(name = "現在のサーバー人数", value = f"{member.guild.member_count}人")
+        embed.add_field(name = t(member.guild.preferred_locale.value, "member.name"), value = member.name)
+        embed.add_field(name = t(member.guild.preferred_locale.value, "member.id"), value = member.id)
+        embed.add_field(name = t(member.guild.preferred_locale.value, "member.created_at"), value = member.created_at)
+        embed.add_field(name = t(member.guild.preferred_locale.value, "log.current_member_count"), value = f"{member.guild.member_count}人")
         embed.set_thumbnail(url = member.avatar.url if member.avatar else member.default_avatar.url)
         if database.get('settings', member.guild.id)[1] is not None:
             await self.bot.get_channel(database.get('settings', member.guild.id)[1]).send(embed = embed)
@@ -105,12 +106,12 @@ class logger(commands.Cog):
     # メンバー退出
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        embed = discord.Embed(title = "📤 - メンバー退出", 
-                              description = f"{member.mention}が退出しました。", 
+        embed = discord.Embed(title = t(member.guild.preferred_locale.value, "log.member_remove"), 
+                              description = t(member.guild.preferred_locale.value, "log.member_remove_description", member=member.mention), 
                               color = discord.Color.red())
-        embed.add_field(name = "名前", value = member.name)
-        embed.add_field(name = "ID", value = member.id)
-        embed.add_field(name = "所有していたロール", value = ", ".join([role.mention for role in member.roles if role.name != "@everyone"]))
+        embed.add_field(name = t(member.guild.preferred_locale.value, "member.name"), value = member.name)
+        embed.add_field(name = t(member.guild.preferred_locale.value, "member.id"), value = member.id)
+        embed.add_field(name = t(member.guild.preferred_locale.value, "log.had_role"), value = ", ".join([role.mention for role in member.roles if role.name != "@everyone"]))
         embed.set_thumbnail(url = member.avatar.url if member.avatar else member.default_avatar.url)
         if database.get('settings', member.guild.id)[1] is not None:
             await self.bot.get_channel(database.get('settings', member.guild.id)[1]).send(embed = embed)
@@ -118,21 +119,21 @@ class logger(commands.Cog):
     # ロール更新
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
-        embed = discord.Embed(title = "🔃 - ロール更新",
-                              description = f"{before.mention}が更新されました。",
+        embed = discord.Embed(title = t(before.guild.preferred_locale.value, "log.role_update"),
+                              description = t(before.guild.preferred_locale.value, "log.role_update_description", role=before.mention),
                               color = discord.Color.orange())
-        embed.add_field(name = "更新前", value = (f'> 名前\n{after.name}\n' if before.name and before.name != after.name else "") + 
-                            (f'> 色\n{after.color}' if before.color and before.color != after.color else "") +  
-                            (f'> 絵文字\n{after.unicode_emoji}' if before.unicode_emoji and before.unicode_emoji != after.unicode_emoji else "") +
-                            (f'> 位置\n{after.position}' if before.position and before.position != after.position else "") + 
-                            (f'> 権限\n{after.permissions}' if before.permissions and before.permissions != after.permissions else ""))
-        embed.add_field(name = "更新後", value = (f'> 名前\n{after.name}\n' if before.name and before.name != after.name else "") + 
-                            (f'> 色\n{after.color}' if before.color and before.color != after.color else "") +  
-                            (f'> 絵文字\n{after.unicode_emoji}' if before.unicode_emoji and before.unicode_emoji != after.unicode_emoji else "") +
-                            (f'> 位置\n{after.position}' if before.position and before.position != after.position else "") + 
-                            (f'> 権限\n{after.permissions}' if before.permissions and before.permissions != after.permissions else ""))
+        embed.add_field(name = t(before.guild.preferred_locale.value, "log.before"), value = (f'> {t(before.guild.preferred_locale.value, "log.name")}\n{after.name}\n' if before.name and before.name != after.name else "") + 
+                            (f'> {t(before.guild.preferred_locale.value, "log.color")}\n{after.color}' if before.color and before.color != after.color else "") +  
+                            (f'> {t(before.guild.preferred_locale.value, "log.emoji")}\n{after.unicode_emoji}' if before.unicode_emoji and before.unicode_emoji != after.unicode_emoji else "") +
+                            (f'> {t(before.guild.preferred_locale.value, "log.position")}\n{after.position}' if before.position and before.position != after.position else "") + 
+                            (f'> {t(before.guild.preferred_locale.value, "log.permissions")}\n{after.permissions}' if before.permissions and before.permissions != after.permissions else ""))
+        embed.add_field(name = t(before.guild.preferred_locale.value, "log.after"), value = (f'> {t(before.guild.preferred_locale.value, "log.name")}\n{after.name}\n' if before.name and before.name != after.name else "") + 
+                            (f'> {t(before.guild.preferred_locale.value, "log.color")}\n{after.color}' if before.color and before.color != after.color else "") +  
+                            (f'> {t(before.guild.preferred_locale.value, "log.emoji")}\n{after.unicode_emoji}' if before.unicode_emoji and before.unicode_emoji != after.unicode_emoji else "") +
+                            (f'> {t(before.guild.preferred_locale.value, "log.position")}\n{after.position}' if before.position and before.position != after.position else "") + 
+                            (f'> {t(before.guild.preferred_locale.value, "log.permissions")}\n{after.permissions}' if before.permissions and before.permissions != after.permissions else ""))
         async for entry in before.guild.audit_logs(limit = 1, action = discord.AuditLogAction.role_update):
-            embed.add_field(name = "更新した人", value = entry.user.mention)
+            embed.add_field(name = t(before.guild.preferred_locale.value, "log.updated_by"), value = entry.user.mention)
         if database.get('settings', before.guild.id)[1] is not None:
             await self.bot.get_channel(database.get('settings', before.guild.id)[1]).send(embed = embed)
         
@@ -144,197 +145,197 @@ class logger(commands.Cog):
         # BAN
         if entry.action == discord.AuditLogAction.ban:
             if type(entry.target) == discord.Member:
-                embed = discord.Embed(title = "🔨 - メンバーをBAN", 
-                                    description = f"{entry.target.mention}がBANされました。", 
+                embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.banned"), 
+                                    description = t(entry.guild.preferred_locale.value, "log.banned_description", user=entry.target.mention), 
                                     color = discord.Color.red())
-                embed.add_field(name = "名前", value = entry.target.name)
-                embed.add_field(name = "ID", value = entry.target.id)
-                embed.add_field(name = "理由", value = entry.reason if entry.reason else "特になし")
-                embed.add_field(name = "BANした人", value = entry.user.mention)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = entry.target.id)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.reason"), value = entry.reason if entry.reason else t(entry.guild.preferred_locale.value, "log.no_reason"))
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.banned_by"), value = entry.user.mention)
                 embed.set_thumbnail(url = entry.target.avatar.url if entry.target.avatar.url else entry.target.default_avatar.url)
 
             else:
                 m = await self.bot.fetch_user(entry.target.id)
-                embed = discord.Embed(title = "🔨 - ユーザーをBAN", 
-                                    description = f"{m.mention}がBANされました。", 
+                embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.banned"), 
+                                    description = t(entry.guild.preferred_locale.value, "log.banned_description", user=m.mention), 
                                     color = discord.Color.red())
-                embed.add_field(name = "名前", value = m.name)
-                embed.add_field(name = "ID", value = m.id)
-                embed.add_field(name = "理由", value = entry.reason if entry.reason else "特になし")
-                embed.add_field(name = "BANした人", value = entry.user.mention)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = m.name)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = m.id)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.reason"), value = entry.reason if entry.reason else t(entry.guild.preferred_locale.value, "log.no_reason"))
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.banned_by"), value = entry.user.mention)
                 embed.set_thumbnail(url = m.avatar.url)
 
         # BAN解除
         elif entry.action == discord.AuditLogAction.unban:
             if type(entry.target) == discord.Member:
-                embed = discord.Embed(title = "✅ - メンバーのBANが解除", 
-                                    description = f"{entry.target.mention}のBANが解除されました。", 
+                embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.unbanned"), 
+                                    description = t(entry.guild.preferred_locale.value, "log.unbanned_description", user=entry.target.mention), 
                                     color = discord.Color.green())
-                embed.add_field(name = "名前", value = entry.target.name)
-                embed.add_field(name = "ID", value = entry.target.id)
-                embed.add_field(name = "理由", value = entry.reason if entry.reason else "特になし")
-                embed.add_field(name = "BAN解除した人", value = entry.user.mention)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = entry.target.id)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.reason"), value = entry.reason if entry.reason else t(entry.guild.preferred_locale.value, "log.no_reason"))
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.banned_by"), value = entry.user.mention)
 
             else:
                 m = await self.bot.fetch_user(entry.target.id)
-                embed = discord.Embed(title = "✅ - ユーザーのBANが解除", 
-                                      description = f"{m.mention}のBANが解除されました。",
-                                        color = discord.Color.green())
-                embed.add_field(name = "名前", value = m.name)
-                embed.add_field(name = "ID", value = m.id)
-                embed.add_field(name = "理由", value = entry.reason if entry.reason else "特になし")
-                embed.add_field(name = "BAN解除した人", value = entry.user.mention)
-                
+                embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.unbanned"),
+                                      description = t(entry.guild.preferred_locale.value, "log.unbanned_description", user=m.mention), 
+                                      color = discord.Color.green())
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = m.name)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = m.id)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.reason"), value = entry.reason if entry.reason else t(entry.guild.preferred_locale.value, "log.no_reason"))
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.banned_by"), value = entry.user.mention)
+
         # Kick
         elif entry.action == discord.AuditLogAction.kick:
             if type(entry.target) == discord.Member:
-                embed = discord.Embed(title = "🦶 - メンバーをキック", 
-                                  description = f"{entry.target.mention}がキックされました。", 
+                embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.kicked"),
+                                  description = t(entry.guild.preferred_locale.value, "log.kicked_description", user=entry.target.mention),
                                   color = discord.Color.red())
-                embed.add_field(name = "名前", value = entry.target.name)
-                embed.add_field(name = "ID", value = entry.target.id)
-                embed.add_field(name = "理由", value = entry.reason if entry.reason else "特になし")
-                embed.add_field(name = "キックした人", value = entry.user.mention)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = entry.target.id)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.reason"), value = entry.reason if entry.reason else t(entry.guild.preferred_locale.value, "log.no_reason"))
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.kicked_by"), value = entry.user.mention)
 
             else:
                 m = await self.bot.fetch_user(entry.target.id)
-                embed = discord.Embed(title = "🦶 - ユーザーをキック", 
-                                  description = f"{m.mention}がキックされました。", 
-                                  color = discord.Color.red())
-                embed.add_field(name = "名前", value = m.name)
-                embed.add_field(name = "ID", value = m.id)
-                embed.add_field(name = "理由", value = entry.reason if entry.reason else "特になし")
-                embed.add_field(name = "キックした人", value = entry.user.mention)
+                embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.kicked"),
+                                      description = t(entry.guild.preferred_locale.value, "log.kicked_description", user=m.mention),
+                                      color = discord.Color.red())
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = m.name)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = m.id)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.reason"), value = entry.reason if entry.reason else t(entry.guild.preferred_locale.value, "log.no_reason"))
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.kicked_by"), value = entry.user.mention)
                 
         # 非アクティブメンバーキック
         elif entry.action == discord.AuditLogAction.member_prune:
-            embed = discord.Embed(title = "🛴 - メンバーのキック", 
-                                  description = "非アクティブメンバーが一括キックされました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.member_prune"),
+                                  description = t(entry.guild.preferred_locale.value, "log.member_prune_description"),
                                   color = discord.Color.red())
-            embed.add_field(name = "キックされたメンバー数", value = entry.extra.members_removed)
-            embed.add_field(name = "非アクティブ日数", value = entry.reason.delete_members_days)
-            embed.add_field(name = "キックした人", value = entry.user.mention)
-        
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.kicked_members"), value = entry.extra.members_removed)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.inactive_days"), value = entry.reason.delete_members_days)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.kicked_by"), value = entry.user.mention)
+
         # メッセージ削除
         elif entry.action == discord.AuditLogAction.message_delete:
-            embed = discord.Embed(title = "🗑️ - メッセージ削除", 
-                                  description = f"{entry.target.mention}のメッセージが削除されました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.message_delete"),
+                                  description = t(entry.guild.preferred_locale.value, "log.message_deleted_description", user=entry.target.mention),
                                   color = discord.Color.red())
-            embed.add_field(name = "名前", value = entry.target.name)
-            embed.add_field(name = "ID", value = entry.target.id)
-            embed.add_field(name = "削除した人", value = entry.user.mention)
-        
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = entry.target.id)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.deleted_by"), value = entry.user.mention)
+
         # メッセージ一括削除
         elif entry.action == discord.AuditLogAction.message_bulk_delete:
             if type(entry.target) != discord.TextChannel:
-                embed = discord.Embed(title = "🗑️ - メッセージ一括削除", 
-                                    description = f"{entry.target.mention}のメッセージが一括削除されました。", 
+                embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.bulk_deleted"),
+                                    description = t(entry.guild.preferred_locale.value, "log.bulk_deleted_description", channel=entry.target.mention),
                                     color = discord.Color.red())
-                embed.add_field(name = 'チャンネル', value = entry.target.mention)
-                embed.add_field(name = "削除されたメッセージ数", value = f"{entry.extra.count}件")
-                embed.add_field(name = "削除した人", value = entry.user.mention)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.channel"), value = entry.target.mention)
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.bulk_deleted_count"), value = f"{entry.extra.count}件")
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.deleted_by"), value = entry.user.mention)
 
             else:
                 ch = await self.bot.fetch_channel(entry.target.id)
-                embed = discord.Embed(title = "🗑️ - メッセージ一括削除",
-                                    description = f"{ch.mention}のメッセージが一括削除されました。",
+                embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.bulk_deleted"),
+                                    description = t(entry.guild.preferred_locale.value, "log.bulk_deleted_description", channel=ch.mention),
                                     color = discord.Color.red())
-                embed.add_field(name = "削除されたメッセージ数", value = f"{entry.extra.count}件")
-                embed.add_field(name = "削除した人", value = entry.user.mention)    
-        
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.bulk_deleted_count"), value = f"{entry.extra.count}件")
+                embed.add_field(name = t(entry.guild.preferred_locale.value, "log.deleted_by"), value = entry.user.mention)
+
         # チャンネル作成
         elif entry.action == discord.AuditLogAction.channel_create:
-            embed = discord.Embed(title = "➕ - チャンネル作成", 
-                                  description = f"{entry.target.mention}が作成されました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.channel_create"),
+                                  description = t(entry.guild.preferred_locale.value, "log.channel_created_description", user=entry.target.mention),
                                   color = discord.Color.green())
-            embed.add_field(name = "名前", value = entry.target.name)
-            embed.add_field(name = "ID", value = entry.target.id)
-            embed.add_field(name = "カテゴリ", value = entry.target.category)
-            embed.add_field(name = "位置", value = entry.target.position)
-            embed.add_field(name = "作成した人", value = entry.user.mention)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = entry.target.id)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.category"), value = entry.target.category)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.position"), value = entry.target.position)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.created_by"), value = entry.user.mention)
 
         # チャンネル削除
         elif entry.action == discord.AuditLogAction.channel_delete:
-            embed = discord.Embed(title = "🗑️ - チャンネル削除", 
-                                  description = f"{entry.target.name}が削除されました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.channel_delete"),
+                                  description = t(entry.guild.preferred_locale.value, "log.channel_deleted_description", channel=entry.target.mention),
                                   color = discord.Color.red())
-            embed.add_field(name = "名前", value = entry.target.name)
-            embed.add_field(name = "ID", value = entry.target.id)
-            embed.add_field(name = "削除した人", value = entry.user.mention)
-        
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = entry.target.id)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.deleted_by"), value = entry.user.mention)
+
         # ロール作成
         elif entry.action == discord.AuditLogAction.role_create:
-            embed = discord.Embed(title = "➕ - ロール作成", 
-                                  description = f"{entry.target.mention}が作成されました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.role_create"),
+                                  description = t(entry.guild.preferred_locale.value, "log.role_created_description", role=entry.target.mention),
                                   color = discord.Color.green())
-            embed.add_field(name = "名前", value = entry.target.name)
-            embed.add_field(name = "ID", value = entry.target.id)
-            embed.add_field(name = "色", value = entry.target.color)
-            embed.add_field(name = "権限", value = entry.target.permissions)
-            embed.add_field(name = "位置", value = entry.target.position)
-            embed.add_field(name = "作成した人", value = entry.user.mention)
-            
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = entry.target.id)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.color"), value = entry.target.color)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.permissions"), value = entry.target.permissions)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.position"), value = entry.target.position)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.created_by"), value = entry.user.mention)
+
         # ロール削除
         elif entry.action == discord.AuditLogAction.role_delete:
-            embed = discord.Embed(title = "🗑️ - ロール削除", 
-                                  description = f"{entry.target.name}が削除されました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.role_delete"),
+                                  description = t(entry.guild.preferred_locale.value, "log.role_deleted_description", role=entry.target.mention),
                                   color = discord.Color.red())
-            embed.add_field(name = "名前", value = entry.target.name)
-            embed.add_field(name = "ID", value = entry.target.id)
-            embed.add_field(name = "削除した人", value = entry.user.mention)
-            
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.id"), value = entry.target.id)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.deleted_by"), value = entry.user.mention)
+
         # 招待作成
         elif entry.action == discord.AuditLogAction.invite_create:
-            embed = discord.Embed(title = "🔗 - 招待リンク作成", 
-                                  description = f"{entry.user.mention}が招待リンクを作成しました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.invite_create"),
+                                  description = t(entry.guild.preferred_locale.value, "log.invite_created_description", user=entry.user.mention),
                                   color = discord.Color.green())
-            embed.add_field(name = "招待リンク", value = entry.target.url)
-            embed.add_field(name = "最大使用回数", value = entry.target.max_uses)
-            embed.add_field(name = "有効期限", value = entry.target.max_age)
-            embed.add_field(name = "作成した人", value = entry.user.mention)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.invite_link"), value = entry.target.url)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.max_uses"), value = entry.target.max_uses)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.max_age"), value = entry.target.max_age)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.created_by"), value = entry.user.mention)
         
         # 招待削除
         elif entry.action == discord.AuditLogAction.invite_delete:
-            embed = discord.Embed(title = "⛓️‍💥 - 招待リンク削除", 
-                                  description = f"{entry.user.mention}が招待リンクを削除しました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.invite_delete"),
+                                  description = t(entry.guild.preferred_locale.value, "log.invite_deleted_description", user=entry.user.mention),
                                   color = discord.Color.red())
-            embed.add_field(name = "招待リンク", value = entry.target.url)
-            embed.add_field(name = "削除した人", value = entry.user.mention)
-        
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.invite_link"), value = entry.target.url)
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.deleted_by"), value = entry.user.mention)
+
         # メンバーロール更新
         elif entry.action == discord.AuditLogAction.member_role_update:
-            embed = discord.Embed(title = "🔃 - メンバーロール更新", 
-                                  description = f"{entry.target.mention}のロールが更新されました。", 
+            embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.member_role_update"),
+                                  description = t(entry.guild.preferred_locale.value, "log.member_role_updated_description", user=entry.target.mention),
                                   color = discord.Color.orange())
-            embed.add_field(name = "追加されたロール", value = " ".join([role.mention for role in entry.after.roles if role not in entry.before.roles]))
-            embed.add_field(name = "削除されたロール", value = " ".join([role.mention for role in entry.before.roles if role not in entry.after.roles]))
-            embed.add_field(name = "変更した人", value = entry.user.mention)
-        
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.added_roles"), value = " ".join([role.mention for role in entry.after.roles if role not in entry.before.roles]))
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.removed_roles"), value = " ".join([role.mention for role in entry.before.roles if role not in entry.after.roles]))
+            embed.add_field(name = t(entry.guild.preferred_locale.value, "log.changed_by"), value = entry.user.mention)
+
         # メンバー更新
         elif entry.action == discord.AuditLogAction.member_update:
             # ニックネーム変更
             if type(entry.target) == discord.Member:
                 if entry.before.nick != entry.after.nick:
-                    embed = discord.Embed(title = "🔃 - メンバー更新", 
-                                    description = f"{entry.target.mention}のニックネームが更新されました。", 
+                    embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.member_update"),
+                                    description = t(entry.guild.preferred_locale.value, "log.member_nick_update_description", user=entry.target.mention),
                                     color = discord.Color.orange())
-                    embed.add_field(name = "変更前", value = entry.before.nick)
-                    embed.add_field(name = "変更後", value = entry.after.nick if entry.after.nick else f"{entry.after.name} (ニックネームリセット)")
-                    embed.add_field(name = "変更した人", value = entry.user.mention)
+                    embed.add_field(name = t(entry.guild.preferred_locale.value, "log.before_change"), value = entry.before.nick)
+                    embed.add_field(name = t(entry.guild.preferred_locale.value, "log.after_change"), value = entry.after.nick if entry.after.nick else f"{entry.after.name} (ニックネームリセット)")
+                    embed.add_field(name = t(entry.guild.preferred_locale.value, "log.changed_by"), value = entry.user.mention)
                 # タイムアウト
             elif entry.before.is_timed_out() != entry.after.is_timed_out():
                 if entry.after.timed_out_until is None:
-                    embed = discord.Embed(title = "✅ - メンバーのタイムアウト解除", 
-                                    description = f"{entry.target.mention}のタイムアウトが解除されました。", 
+                    embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.untimed_out"),
+                                    description = t(entry.guild.preferred_locale.value, "log.untimed_out_description", user=entry.target.mention),
                                     color = discord.Color.green())
-                    embed.add_field(name = '名前', value = entry.target.name+"("+entry.target.mention+")")
+                    embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = entry.target.name+"("+entry.target.mention+")")
                 else:
-                    embed = discord.Embed(title = "🔇 - メンバーがタイムアウト", 
-                                    description = f"{entry.target.mention}がタイムアウトされました。", 
+                    embed = discord.Embed(title = t(entry.guild.preferred_locale.value, "log.member_timed_out"),
+                                    description = t(entry.guild.preferred_locale.value, "log.member_timed_out_description", user=entry.target.mention),
                                     color = discord.Color.red())
-                    embed.add_field(name = '名前', value = f"{entry.target.name} ({entry.target.mention}")
-                    embed.add_field(name = "解除時間", value = f"{discord.utils.format_dt(entry.after.timed_out_until, 'F')}({discord.utils.format_dt(entry.after.timed_out_until, 'R')})")
-                
+                    embed.add_field(name = t(entry.guild.preferred_locale.value, "log.name"), value = f"{entry.target.name} ({entry.target.mention})")
+                    embed.add_field(name = t(entry.guild.preferred_locale.value, "log.time_out_duration"), value = f"{discord.utils.format_dt(entry.after.timed_out_until, 'F')}({discord.utils.format_dt(entry.after.timed_out_until, 'R')})")
+
         else:
             return
         if database.get('settings', entry.guild.id)[1] is not None:
@@ -346,16 +347,16 @@ class logger(commands.Cog):
         if before.channel == after.channel:
             return
         if before.channel is None and after.channel is not None:
-            embed = discord.Embed(title = "🚪 - VC参加", 
-                                  description = f"{member.mention}が{after.channel.mention}に参加しました。", 
+            embed = discord.Embed(title = t(member.guild.preferred_locale.value, "log.vc_join"),
+                                  description = t(member.guild.preferred_locale.value, "log.vc_join_description", user=member.mention, channel=after.channel.mention),
                                   color = discord.Color.green())
         elif before.channel is not None and after.channel is None:
-            embed = discord.Embed(title = "🚶‍♂️ - VC退出", 
-                                  description = f"{member.mention}が{before.channel.mention}から退出しました。", 
+            embed = discord.Embed(title = t(member.guild.preferred_locale.value, "log.vc_leave"),
+                                  description = t(member.guild.preferred_locale.value, "log.vc_leave_description", user=member.mention, channel=before.channel.mention),
                                   color = discord.Color.red())
         else:
-            embed = discord.Embed(title = "🚶‍♂️‍➡️ - VC移動", 
-                                  description = f"{member.mention}が{before.channel.mention}から{after.channel.mention}に移動しました。", 
+            embed = discord.Embed(title = t(member.guild.preferred_locale.value, "log.vc_move"),
+                                  description = t(member.guild.preferred_locale.value, "log.vc_move_description", user=member.mention, from_channel=before.channel.mention, to_channel=after.channel.mention),
                                   color = discord.Color.blurple())
         if database.get('settings', member.guild.id)[1] is not None:
             await self.bot.get_channel(database.get('settings', member.guild.id)[1]).send(embed = embed)

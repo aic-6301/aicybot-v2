@@ -36,7 +36,10 @@ class settings(commands.Cog):
     ])
     @app_commands.default_permissions(manage_guild=True)
     async def osuexpand(self, interaction: discord.Interaction, mode: int):
-        database.set('osu_expand', 'bool', mode, interaction.guild.id)
+        if database.get('osu_expand', interaction.guild.id) is None:
+            database.insert('osu_expand', ['guild', 'bool'], [interaction.guild.id, mode])
+        else:
+            database.update('osu_expand', ['bool'], [mode], key_value=interaction.guild.id)
         await interaction.response.send_message(f'osu!のメッセージの展開を{"有効" if mode else "無効"}にしました。', ephemeral=True)
     
     @settings.command(name='join', description='メンバーが参加した際の通知を設定します。')

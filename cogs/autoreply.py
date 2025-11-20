@@ -9,6 +9,7 @@ import re
 import Paginator
 
 from utils import database
+from utils.locale import t
 
 
 class autoreply(commands.Cog):
@@ -17,60 +18,75 @@ class autoreply(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    group = app_commands.Group(name = "autoreply", description = "自動返信の設定を行います")
-    
-    @group.command(name = "add", description = "自動返信を追加します")
-    @app_commands.describe(keyword = 'キーワード(re:をつけてregex対応。\nfull:で完全一致。)', reply = '返信内容(reply:で返信させる。\nreact:でリアクションをつける。\nrandom:でランダムに返信)')
+    group = app_commands.Group(name = "autoreply", description = app_commands.locale_str("autoreply.description"))
+
+    @group.command(name = "add", description = app_commands.locale_str("autoreply.add.description"))
+    @app_commands.describe(
+        keyword = app_commands.locale_str("autoreply.add.keyword"),
+        reply = app_commands.locale_str("autoreply.add.reply")
+    )
     async def add(self, interaction: discord.Interaction, keyword: str, reply: str):
         if sum(prefix in keyword for prefix in ['re:', 'full:']) > 1 or sum(prefix in reply for prefix in ['reply:', 'react:', 'random:']) > 1:
-            await interaction.response.send_message('キーワードまたは返信内容にコマンドが二つ以上指定されています。', ephemeral = True)
+            await interaction.response.send_message(t(interaction.locale.value, "error.multiple_commands", commands="commands"), ephemeral = True)
             return
         _id = ''.join(random.choices(string.ascii_letters + string.digits, k = 8))
         try:
             database.insert_or_update('autoreply', ['id', 'keyword', 'reply', 'user', 'guild'], [str(_id), str(keyword), str(reply), int(interaction.user.id), int(interaction.guild.id)])
-            embed = discord.Embed(title = '自動返信を追加', description = f'キーワード: `{keyword}`\n返信内容: `{reply}`\n `/autoreply delete content:{_id}` または、`/autoreply delete content:{keyword}`で削除できます。', color = discord.Color.blurple())
+            embed = discord.Embed(
+                title = t(interaction.locale.value, "autoreply.add.title"), 
+                description = t(interaction.locale.value, "autoreply.add.em_description", keyword=keyword, reply=reply, _id=_id), 
+                color = discord.Color.blurple()
+            )
             await interaction.response.send_message(embed = embed, ephemeral = True)
             return
         except Exception as e:
             print(e)
-            await interaction.response.send_message('エラーが発生しました。もう一度試してください。', ephemeral = True)
+            await interaction.response.send_message(t(interaction.locale.value, "error.try_again"), ephemeral = True)
             return
     
-    @group.command(name = "delete", description = "自動返信を削除します")
-    @app_commands.describe(content = '削除するキーワードまたはID(キーワードの場合は同じキーワードをすべて削除されます。)')
+    @group.command(name = "delete", description = app_commands.locale_str("autoreply.delete.description"))
+    @app_commands.describe(content = app_commands.locale_str("autoreply.delete.keyword"))
     async def delete(self, interaction: discord.Interaction, content: str):
         if database.get_key('autoreply', 'keyword', content):
             data = database.get_key('autoreply', 'keyword', content)
             database.delete('autoreply', 'keyword', content)
             replies = [data_item[2] for data_item in data]
-            embed = discord.Embed(title = '自動返信を削除', description = f'キーワード: `{content}`\n> 削除された返信内容\n `{"`\n`".join(replies)}`', color = discord.Color.blurple())
+            embed = discord.Embed(
+                title = t(interaction.locale.value, "autoreply.success.deleted"), 
+                description = f'{t(interaction.locale.value, "autoreply.list.keyword")}: `{content}`\n> {t(interaction.locale.value, "autoreply.delete.deleted_content")}\n `{"`\n`".join(replies)}`', 
+                color = discord.Color.blurple()
+            )
             await interaction.response.send_message(embed = embed, ephemeral = True)
             return
         elif database.get_key('autoreply', 'id', content):
             data = database.get_key('autoreply', 'id', content)
             database.delete('autoreply', 'id', content)
             replies = [data_item[2] for data_item in data]
-            embed = discord.Embed(title = '自動返信を削除', description = f'ID: `{content}`\n> 削除された返信内容\n {"`\n`".join(replies)}', color = discord.Color.blurple())
+            embed = discord.Embed(
+                title = t(interaction.locale.value, "autoreply.success.deleted"), 
+                description = f'ID: `{content}`\n> {t(interaction.locale.value, "autoreply.delete.deleted_content")}\n {"`\n`".join(replies)}', 
+                color = discord.Color.blurple()
+            )
             await interaction.response.send_message(embed = embed, ephemeral = True)
             return
         else:
-            await interaction.response.send_message('そのキーワード・IDは存在しません。', ephemeral = True)
+            await interaction.response.send_message(t(interaction.locale.value, "autoreply.error.not_found_keyword"), ephemeral = True)
             return
-    
-    @group.command(name = "list", description = "自動返信のリストを表示します")
+
+    @group.command(name = "list", description = app_commands.locale_str("autoreply.list.description"))
     async def list(self, interaction: discord.Interaction):
         autoreplies = database.get_key('autoreply', 'guild', interaction.guild.id)
         if not autoreplies:
-            await interaction.response.send_message('自動返信は何も設定されていません。', ephemeral = True)
+            await interaction.response.send_message(t(interaction.locale.value, "autoreply.list.empty"), ephemeral = True)
             return
         embeds = []
-        embed = discord.Embed(title = '自動返信リスト', color = discord.Color.blurple())
+        embed = discord.Embed(title = t(interaction.locale.value, "autoreply.list.title"), color = discord.Color.blurple())
         for i, autoreply in enumerate(autoreplies):
-            field_value = f'キーワード:{autoreply[1]}\n返信内容:{autoreply[2][:300] + "..." if len(autoreply[2]) > 300 else autoreply[2]}\n登録者: <@{autoreply[3]}>'
+            field_value = f'{t(interaction.locale.value, "autoreply.list.keyword")}:{autoreply[1]}\n{t(interaction.locale.value, "autoreply.list.reply")}:{autoreply[2][:300] + "..." if len(autoreply[2]) > 300 else autoreply[2]}\n{t(interaction.locale.value, "autoreply.list.register")}: <@{autoreply[3]}>'
             embed.add_field(name = f'ID: `{autoreply[0]}`', value = field_value)
             if (i+1) % 10 == 0:
                 embeds.append(embed)
-                embed = discord.Embed(title = '自動返信リスト', color = discord.Color.blurple())
+                embed = discord.Embed(title = t(interaction.locale.value, "autoreply.list.title"), color = discord.Color.blurple())
         if len(embed.fields) > 0:
             embeds.append(embed)
         if len(embeds) == 1:

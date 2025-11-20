@@ -1,0 +1,317 @@
+{
+    "loading": "読み込み中...",
+    "error": { 
+        "title": "エラー",
+        "multiple_commands": "キーワードまたは返信内容にコマンドが二つ以上指定されています。",
+        "try_again": "エラーが発生しました。もう一度試してください。"
+    },
+    "osu": {
+        "description": "osu!関連のコマンド",
+        "error": {
+            "not_found_user": "プレイヤーが見つかりませんでした。",
+            "invalid_username": "無効なユーザー名です。",
+            "not_linked": "osu!アカウントがリンクされていません。\n /osu link コマンドを使用してリンクしてください。",
+            "no_recent_plays": "最近のプレイが見つかりませんでした。",
+            "no_beatmap": "ビートマップが見つかりませんでした。",
+            "not_found_beatmap": "指定したビートマップが見つかりませんでした。",
+            "invalid_beatmap_id": "無効なビートマップIDです。"
+        },
+        "success": {
+            "linked": "osu!アカウントが正常にリンクされました。",
+            "unlinked": "osu!アカウントのリンクが解除されました。",
+            "updated": "osu!アカウント情報が更新されました。"
+        },
+        "link_description": "osu!アカウントをリンクします。",
+        "unlink_description": "osu!アカウントのリンクを解除します。",
+        "recent_description": "最近のプレイを表示します。(過去24時間)",
+        "user_description": "指定したユーザーの情報を取得します。",
+        "user": "ユーザー名",
+        "info": "{name}の情報",
+        "score": "🎵 スコア",
+        "pp": "✨ PP",
+        "accuracy": "🎯 精度",
+        "combo": "🥁 コンボ",
+        "rank": "🏅 ランク",
+        "difficulty": "📘 難易度",
+        "bpm": "🎛️ BPM",
+        "mods": "🛠️ Mod",
+        "failed": "😱失敗",
+        "no_mods": "なし",
+        "playcount": "プレイ数",
+        "downloaded": "ダウンロード数",
+        "playtime": "プレイ時間",
+        "max_combo": "最大コンボ",
+        "level": "🎚️ レベル",
+        "ranking": "🏆 国内ランキング / 世界ランキング",
+        "playtime_count": "⌛ プレイ時間 / プレイ回数",
+        "playtime_count_text": "{playtime}時間 / {playcount}回"
+    },
+    "settings": {
+        "expand": {
+            "descritpion": "メッセージを自動で展開するかを設定します。",
+            "mode": "展開するかどうかを設定します。",
+            "True": "展開する",
+            "False": "展開しない",
+            "success": "メッセージの展開を{mode}に設定しました。"
+        },
+        "osuexpand": {
+            "description": "osu!のメッセージを自動で展開するかを設定します。",
+            "mode": "展開するかどうかを設定します。",
+            "True": "展開する",
+            "False": "展開しない",
+            "success": "osu!のメッセージの展開を{mode}に設定しました。"
+        },
+        "join": {
+            "description": "新規メンバーがサーバーに参加した際にメッセージを送信するか設定します。",
+            "mode": "通知するかどうかを設定します。",
+            "channel": "通知するチャンネルを設定します。",
+            "True": "メッセージを送信する",
+            "False": "メッセージを送信しない",
+            "success": "参加通知を{mode}にし、{channel}に通知するよう設定しました。"
+        },
+        "log": {
+            "description": "サーバーのログを記録するか設定します。",
+            "mode": "ログを記録するかどうかを設定します。",
+            "channel": "ログを送信するチャンネルを設定します。",
+            "True": "ログを記録する",
+            "False": "ログを記録しない",
+            "success": "ログ機能を{mode}にし、{channel}に送信するよう設定しました。"
+        }
+    },
+    "server": {
+        "not_found": "サーバーが見つかりませんでした。",
+        "not_in_server": "このサーバーには参加していません。",
+        "server_id": "サーバーID",
+        "owner": "サーバーオーナー",
+        "member_count": "メンバー数",
+        "created_at": "作成日時",
+        "boost_level": "ブーストレベル",
+        "boost_count": "ブースト数",
+        "region": "サーバー地域",
+        "total_channel_count": "総チャンネル数",
+        "total_channel_count_text": "チャンネル (カテゴリ含む)",
+        "total_voice_channel_count": "<:voice_channels:1348887353204281425> ボイスチャンネル",
+        "total_text_channel_count": "<:text_channels:1348887353204281425> テキストチャンネル",
+        "total_category_count": "<:categories:1348887353204281425> カテゴリ",
+        "total_role_count": "<:roles:1348887353204281425> ロール",
+        "total_emote_count": "🧵 絵文字"
+    },
+    "member": {
+        "not_found": "メンバーが見つかりませんでした。",
+        "not_in_server": "このサーバーには参加していません。",
+        "info": "{name}の情報",
+        "id": "ユーザーID",
+        "name": "名前",
+        "joined_at": "参加日時",
+        "created_at": "アカウント作成日時",
+        "roles": "ロール",
+        "status": "ステータス"
+    },
+    "rolepanel": {
+        "description": "ロールパネルを管理します。",
+        "error": {
+            "not_found_panel": "指定されたロールパネルが見つかりませんでした。",
+            "not_role_in_panel": "ロールが見つかりませんでした。\nロールを設定してからもう一度お試しください。",
+            "not_found_role": "指定されたロールが見つかりませんでした。",
+            "not_found_role_footer": "ロールが削除されている可能性があります。",
+            "cant_add": "ロールを追加できませんでした。\n権限が不足しています。",
+            "already_exists": "このロールパネルはすでに存在します。"
+        },
+        "success": {
+            "added": "追加されたロール: {role}",
+            "removed": "削除されたロール: {role}",
+            "updated": "ロールパネルが更新されました。",
+            "created": "ロールパネルが作成されました。",
+            "deleted": "ロールパネルが削除されました。",
+            "added_role": "ロールが追加されました: {role}",
+            "removed_role": "ロールが削除されました: {role}"
+        },
+        "create": {
+            "description": "ロールパネルを作成します。",
+            "name": "ロールパネルの名前"
+        },
+        "delete": {
+            "description": "ロールパネルを削除します。",
+            "name": "削除するロールパネルの名前"
+        },
+        "addrole": {
+            "description": "ロールパネルにロールを追加します。",
+            "name": "ロールパネルの名前",
+            "role": "追加するロールの名前"
+        },
+        "removerole": {
+            "description": "ロールパネルからロールを削除します。",
+            "name": "ロールパネルの名前",
+            "role": "削除するロールの名前"
+        },
+        "send": {
+            "description": "ロールパネルを送信します。",
+            "name": "ロールパネルの名前",
+            "channel": "送信先チャンネル",
+            "choose_role": "ロールを選択",
+            "success": "{name}のロールパネルを{channel}に送信しました。"
+        }
+    },
+    "expand": {
+        "deleted": "削除しました。",
+        "jump_to": "メッセージにジャンプ",
+        "delete": "削除"
+    },
+    "music": {
+        "description": "現在再生している音楽の情報を表示します。",
+        "member": "情報を取得するメンバー",
+        "spotify_playing": "Spotifyで再生中",
+        "user_playing": "{user}が{activity}で再生中",
+        "listen_on_spotify": "Spotifyで聞く",
+        "title": "タイトル",
+        "artist": "アーティスト",
+        "album": "アルバム",
+        "duration": "再生時間",
+        "started_at": "再生開始時間",
+        "length": "曲の長さ",
+        "search": "検索する",
+        "detail": "詳細",
+        "over": "これ以上の情報は不明です。",
+        "not_playing": "現在再生中の音楽はありません。",
+        "nothing": "何もしていないようです。"
+    },
+    "log": {
+        "message_edit": "📝 - メッセージ編集",
+        "message_edit_description": "{user}がメッセージを編集しました。",
+        "before_edit": "編集前",
+        "after_edit": "編集後",
+        "message_link": "メッセージリンク",
+        "channel": "チャンネル",
+        "message_delete": "🗑️ - メッセージ削除",
+        "message_delete_description": "{user}がメッセージを削除しました。",
+
+        "name": "名前",
+        "content": "内容",
+        "topic": "トピック",
+        "color": "色",
+        "emoji": "絵文字",
+        "position": "位置",
+        "permissions": "権限",
+        "updator": "更新者",
+        "id": "ID",
+        "reason": "理由",
+        "category": "カテゴリ",
+
+        "changed_by": "変更した人",
+        "no_reason": "なし",
+
+        "channel_create": "📁 - チャンネル作成",
+        "channel_create_description": "{channel}がチャンネルを作成しました。",
+        "channel_changed": "🔃 - チャンネル更新",
+        "channel_changed_description": "{channel}が更新されました。",
+        "channel_delete": "🗑️ - チャンネル削除",
+        "channel_delete_description": "{channel}が削除されました。",
+
+        "member_joined": "📥 - メンバー参加",
+        "member_joined_description": "{user}がサーバーに参加しました。",
+        "current_member_count": "現在のサーバー人数",
+        "member_left": "📤 - メンバー退出",
+        "member_left_description": "{user}がサーバーから退出しました。",
+        "had_role": "所有していたロール",
+
+        "role_changed": "🔃 - ロール更新",
+        "role_changed_description": "{user}が更新されました。",
+
+        "banned" : "🔨 - メンバーをBAN",
+        "banned_description": "{user}がBANされました。",
+
+        "bannedby": "BANした人",
+        "unbanned": "✅ - メンバーのBANが解除",
+        "unbanned_description": "{user}のBANが解除されました。",
+
+        "kicked": "🦶 - ユーザーをキック",
+        "kicked_description": "{user}がサーバーからキックされました。",
+
+        "kickedby": "キックした人",
+        "nonactive_kick_description": "非アクティブメンバーが一括キックされました。",
+        "nonactive_kicked": "キックされた人数",
+        "nonactive_days": "非アクティブ期間 (日)",
+
+        "message_deleted_description": "{user}がメッセージを削除しました。",
+        "deleted_by": "削除した人",
+
+        "bulk_deleted": "🗑️ - メッセージ一括削除",
+        "bulk_deleted_description": "{channel}のメッセージが一括削除されました。",
+        "bulk_deleted_count": "削除されたメッセージ数",
+
+        "role_create": "➕ - ロール作成",
+        "role_create_description": "{role}がロールを作成しました。",
+
+        "role_delete": "🗑️ - ロール削除",
+        "role_delete_description": "{role}がロールを削除しました。",
+
+        "invite_create": "🔗 - 招待リンク作成",
+        "invite_create_description": "{user}が招待リンクを作成しました。",
+
+        "invite_code": "招待コード",
+        "invite_max_uses": "最大使用回数",
+        "invite_expires_at": "有効期限",
+        "invite_link": "招待リンク",
+        "created_by": "作成者",
+        "invite_delete": "🔗 - 招待リンク削除",
+        "invite_delete_description": "{user}が招待リンクを削除しました。",
+
+        "member_role_update": "🔃 - メンバーのロール更新",
+        "member_role_update_description": "{user}のロールが更新されました。",
+        "added_roles": "追加されたロール",
+        "removed_roles": "削除されたロール",
+
+        "member_update": "🔃 - メンバー更新",
+        "member_nick_update_description": "{user}のニックネームが更新されました。",
+
+        "timed_out": "🔇 - メンバーがタイムアウト",
+        "timed_out_description": "{user}がタイムアウトされました。",
+
+        "untimed_out": "✅ - メンバーのタイムアウト解除",
+        "untimed_out_description": "{user}のタイムアウトが解除されました。",
+        "time_out_duration": "タイムアウト期間",
+
+        "vc_join": "🚪 - VC参加",
+        "vc_join_description": "{user}が{channel}参加しました。",
+
+        "vc_leave": "🚶‍♂️ - VC退出",
+        "vc_leave_description": "{user}が{channel}から退出しました。",
+
+        "vc_move": "🚶‍♂️‍➡️ - VC移動",
+        "vc_move_description": "{user}が{from_channel}から{to_channel}に移動しました。"
+    },
+
+    "autoreply": {
+        "description": "自動返信を管理します。",
+        "error": {
+            "not_found_reply": "指定された自動返信が見つかりませんでした。",
+            "already_exists": "この自動返信はすでに存在します。",
+            "not_found_keyword": "指定されたキーワード/IDが見つかりませんでした。"
+        },
+        "success": {
+            "created": "自動返信が作成されました。",
+            "updated": "自動返信が更新されました。",
+            "deleted": "自動返信が削除されました。"
+        },
+        "add": {
+            "description": "自動返信を作成します。",
+            "keyword": "キーワード (re:をつけてregex, full:で完全一致)",
+            "reply": "返信内容 (noreply:で返信なし、\nreact:でリアクション。\nrandom:でランダム返信)",
+            "title": "自動返信の追加",
+            "em_description": "キーワード: `{keyword}`\n返信内容: `{reply}`\n `/autoreply delete content:{_id}` または、`/autoreply delete content:{keyword}`で削除できます。"
+        },
+        "delete": {
+            "description": "自動返信を削除します。",
+            "keyword": "削除するキーワード / ID",
+            "deleted_content": "削除された返信内容"
+        },
+        "list": {
+            "description": "自動返信のリストを表示します。",
+            "title": "自動返信リスト",
+            "empty": "自動返信が登録されていません。",
+            "keyword": "キーワード",
+            "reply": "返信内容",
+            "register": "登録者"
+        }
+    }
+}

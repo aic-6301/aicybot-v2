@@ -4,6 +4,7 @@ from discord import app_commands
 import re
 
 from utils import database
+from utils.locale import t
 
 regex_discord_message_url = (
     '(?!<)https://(ptb.|canary.)?discord(app)?.com/channels/'
@@ -52,15 +53,15 @@ async def _expand(message: discord.Message):
             for em in m.embeds[:2]:
                 embeds.append(em)
         view = discord.ui.View()
-        view.add_item(discord.ui.Button(style = discord.ButtonStyle.link, label = 'メッセージに飛ぶ', url = m.jump_url, emoji = '🔗'))
-        view.add_item(discord.ui.Button(style = discord.ButtonStyle.danger, label = '削除', custom_id = 'delete-expand', emoji = '🗑️'))
+        view.add_item(discord.ui.Button(style = discord.ButtonStyle.link, label = t(m.guild.preferred_locale.value, "expand.jump_to_message"), url = m.jump_url, emoji = '🔗'))
+        view.add_item(discord.ui.Button(style = discord.ButtonStyle.danger, label = t(m.guild.preferred_locale.value, "expand.delete"), custom_id = 'delete-expand', emoji = '🗑️'))
 
         await message.reply(embeds = embeds, mention_author = False, view = view)
 
 
 async def deexpand(interaction: discord.Interaction):
     await interaction.message.delete()
-    await interaction.response.send_message("削除しました。", ephemeral = True)
+    await interaction.response.send_message(t(interaction.locale.value, "expand.deleted"), ephemeral = True)
 
     
 async def get_message(message):
